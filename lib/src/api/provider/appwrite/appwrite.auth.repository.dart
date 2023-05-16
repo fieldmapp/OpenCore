@@ -1,5 +1,5 @@
-import 'package:OpenCore/core.dart';
-import 'package:OpenCore/src/api/auth/user_adapater.dart';
+import 'package:open_core/core.dart';
+import 'package:open_core/src/api/auth/user_adapater.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';

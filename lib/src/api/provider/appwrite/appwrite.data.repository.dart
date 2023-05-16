@@ -1,4 +1,4 @@
-import 'package:OpenCore/core.dart';
+import 'package:open_core/core.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';

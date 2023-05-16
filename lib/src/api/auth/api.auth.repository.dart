@@ -1,5 +1,5 @@
-import 'package:OpenCore/src/api/auth/AuthService.extension.dart';
-import 'package:OpenCore/src/api/auth/user_adapater.dart';
+import 'package:open_core/src/api/auth/AuthService.extension.dart';
+import 'package:open_core/src/api/auth/user_adapater.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 

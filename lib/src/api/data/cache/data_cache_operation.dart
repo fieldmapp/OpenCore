@@ -1,4 +1,4 @@
-import 'package:OpenCore/src/api/Cache.mixin.dart';
+import 'package:open_core/src/api/Cache.mixin.dart';
 import 'package:hive/hive.dart';
 
 part 'data_cache_operation.g.dart';

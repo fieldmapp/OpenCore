@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:OpenCore/core.dart';
-import 'package:OpenCore/src/api/auth/user_adapater.dart';
+import 'package:open_core/core.dart';
+import 'package:open_core/src/api/auth/user_adapater.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
