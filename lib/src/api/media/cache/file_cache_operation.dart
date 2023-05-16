@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:core/src/api/Cache.mixin.dart';
+import 'package:OpenCore/src/api/Cache.mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 

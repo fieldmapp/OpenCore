@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:core/src/api/Cache.mixin.dart';
+import 'package:OpenCore/core.dart';
+import 'package:OpenCore/src/api/Cache.mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:core/core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:mime/mime.dart';

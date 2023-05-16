@@ -1,4 +1,4 @@
-import 'package:core/core.dart';
+import 'package:OpenCore/core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';

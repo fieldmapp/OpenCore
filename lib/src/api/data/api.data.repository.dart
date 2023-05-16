@@ -1,6 +1,5 @@
-import 'package:core/core.dart';
-import 'package:core/src/api/data/data_adapater.dart';
-import 'package:core/src/api/data/data_service.extension.dart';
+import 'package:OpenCore/core.dart';
+import 'package:OpenCore/src/api/data/data_service.extension.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 

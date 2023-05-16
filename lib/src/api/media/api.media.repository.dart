@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:core/src/api/media/file_adapater.dart';
-import 'package:core/src/api/media/MediaService.extension.dart';
+import 'package:OpenCore/core.dart';
+import 'package:OpenCore/src/api/media/MediaService.extension.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 

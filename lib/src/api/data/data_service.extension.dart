@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:core/core.dart';
-import 'package:core/src/api/Cache.mixin.dart';
+import 'package:OpenCore/core.dart';
+import 'package:OpenCore/src/api/Cache.mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
