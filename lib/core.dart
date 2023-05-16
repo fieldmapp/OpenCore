@@ -1,0 +1,19 @@
+library core;
+
+export 'src/exceptions/connection_exception.dart';
+export 'src/module.model.dart';
+export 'src/module.ui.dart';
+export 'src/connectivity.service.dart';
+export 'src/widgets/expandable_fab.widget.dart';
+export 'src/widgets/info_container.widget.dart';
+export 'src/api/data/data_adapater.dart';
+export 'src/api/auth/api.auth.repository.dart';
+export 'src/api/data/api.data.repository.dart';
+export 'src/api/data/cache/data_cache_operation.dart';
+export 'src/api/media/api.media.repository.dart';
+export 'src/api/media/cache/file_cache_operation.dart';
+export 'src/api/provider/appwrite/appwrite.base.dart';
+export 'src/api/provider/appwrite/appwrite.auth.repository.dart';
+export 'src/api/provider/appwrite/appwrite.data.repository.dart';
+export 'src/api/provider/appwrite/appwrite.media.repository.dart';
+export 'src/api/media/file_adapater.dart';
