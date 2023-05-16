@@ -27,7 +27,7 @@ class AppwriteMediaRepository extends ApiMediaRepository {
           .createFile(
               bucketId: bucket,
               fileId: fileId,
-              file: InputFile(path: file.path))
+              file: InputFile.fromPath(path: file.path))
           .timeout(_uploadTimelimit);
       logger.i(res);
     } on AppwriteException catch (eApp) {
