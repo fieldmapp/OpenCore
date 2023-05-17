@@ -11,31 +11,22 @@ class FileProxy extends HiveObject {
   String fileId;
   @HiveField(2)
   String name;
-  // @HiveField(3)
-  // Uint8List content;
   @HiveField(3)
   String mimeType;
-  // @HiveField(5)
-  // bool withData; // indicator if content is empty Byte-Array
 
   FileProxy({
     required this.bucketId,
     required this.fileId,
     required this.name,
     required this.mimeType,
-    // required this.withData,
-    // required this.content
   });
 
   factory FileProxy.fromDoc(Map<String, dynamic> fileMap) {
     return FileProxy(
-      bucketId: fileMap["bucketId"].toString(),
-      fileId: fileMap["id"].toString(),
-      name: fileMap["name"],
-      // withData: fileMap["withData"],
-      mimeType: fileMap["mimeType"],
-      // content: fileMap["content"]
-    );
+        bucketId: fileMap["bucketId"].toString(),
+        fileId: fileMap["id"].toString(),
+        name: fileMap["name"],
+        mimeType: fileMap["mimeType"]);
   }
 
   @override

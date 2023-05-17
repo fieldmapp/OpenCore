@@ -5,13 +5,13 @@ import 'package:logger/logger.dart';
 
 final _logger = Logger();
 
-class ModuleRoutes {
+sealed class ModuleRoutes {
   const ModuleRoutes({required this.path, required this.absolutePath});
   final String path;
   final String absolutePath;
 }
 
-class ModuleDependency<T extends Object> {
+sealed class ModuleDependency<T extends Object> {
   final T? toInject;
   ModuleDependency({this.toInject});
 
@@ -30,7 +30,7 @@ class ModuleDependency<T extends Object> {
   Type get dependencyType => T;
 }
 
-abstract class AppModule {
+sealed class AppModule {
   final GetIt locator = GetIt.I;
 
   String get moduleName;
@@ -79,7 +79,7 @@ abstract class AppModule {
   }
 }
 
-abstract class RootModule extends AppModule {
+sealed class RootModule extends AppModule {
   /// Extension of a [AppModule] to setup multiple Modules within this structure
   /// initalizes all SubModules, Routes and Dependencies on creation
 

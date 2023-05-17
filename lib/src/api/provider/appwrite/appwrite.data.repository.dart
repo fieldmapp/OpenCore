@@ -3,7 +3,7 @@ import 'package:appwrite/appwrite.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 
-class AppwriteDataRepository extends ApiDataRepository {
+sealed class AppwriteDataRepository extends ApiDataRepository {
   final Databases database;
   final String databaseId;
   // custom timelimit,  determines how long a future should run before it is timouted

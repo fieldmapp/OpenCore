@@ -339,7 +339,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
     final time = DateTime.now().toIso8601String();
     final Map<String, dynamic> docMap = {
       "\$collectionId": collectionId,
-      "\$databaseId": databaseId,
+      "\$databaseId": getSourceIdentifier(),
       "\$id": docId,
       "\$permissions": [],
       "\$updatedAt": time,
