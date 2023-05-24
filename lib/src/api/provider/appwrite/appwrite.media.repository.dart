@@ -5,7 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
-sealed class AppwriteMediaRepository extends ApiMediaRepository {
+class AppwriteMediaRepository extends ApiMediaRepository {
   final Storage storage;
   // custom timelimit,  determines how long a future should run before it is timeouted
   final _downLoadTimelimit = const Duration(seconds: 3, milliseconds: 500);

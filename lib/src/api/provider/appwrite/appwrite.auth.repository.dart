@@ -5,7 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import 'package:uuid/uuid.dart';
 
-sealed class AppwriteAuthRepository extends ApiAuthRepository {
+class AppwriteAuthRepository extends ApiAuthRepository {
   final Account account;
   final uuid = const Uuid();
 
