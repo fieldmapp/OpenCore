@@ -6,9 +6,13 @@ import 'package:logger/logger.dart';
 final _logger = Logger();
 
 abstract class ModuleRoutes {
-  const ModuleRoutes({required this.path, required this.absolutePath});
+  const ModuleRoutes(
+      {required this.parentModule,
+      required this.path,
+      required this.absolutePath});
   final String path;
   final String absolutePath;
+  final String parentModule;
 }
 
 class ModuleDependency<T extends Object> {
