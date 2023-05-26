@@ -33,6 +33,8 @@ class ModuleDependency<T extends Object> {
 abstract class AppModule {
   final GetIt locator = GetIt.I;
 
+  Logger get logger => _logger;
+
   String get moduleName;
 
   // atm we need to rely that the implementation of AppModule
