@@ -1,34 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_core/core.dart';
+import 'routes.dart';
 
 class TestModule extends AppModule {
   TestModule() {
-    print("Setup MOD A");
+    logger.i("Setup Test Mod");
   }
-
-  static String name = "test";
 
   @override
   String get moduleName => runtimeType.toString();
 
   @override
-  List<ModuleDependency> get dependencies =>
-      [ModuleDependency<ApiAuthRepository>()];
+  List<ModuleDependency> get dependencies => [];
+
+  // [ModuleDependency<ApiAuthRepository>()];
 
   @override
-  RouteBase get routes => buildRoutes(locator);
+  RouteBase get routes => buildRoutes();
 
   @override
-  ModuleRoutes get root => Routes.root;
+  ModuleRoutes get root => TestModRoutes.root;
 
   @override
-  List<ModuleRoutes> get moduleRoutes => Routes.values;
+  List<ModuleRoutes> get moduleRoutes => TestModRoutes.values;
 
   @override
   ScaffoldWithNavBarTabItem? get tab => ScaffoldWithNavBarTabItem(
-        initialLocation: Routes.root.absolutePath,
+        initialLocation: TestModRoutes.root.absolutePath,
         icon: const Icon(Icons.home),
-        label: 'Section A',
+        label: 'Test Section',
       );
+
+  @override
+  RouteBase buildRoutes() {
+    return GoRoute(
+      path: TestModRoutes.root.path,
+      pageBuilder: (context, state) =>
+          const NoTransitionPage(child: Placeholder()),
+      routes: [
+        GoRoute(
+          path: TestModRoutes.details.path,
+          builder: (context, state) => const Placeholder(),
+        ),
+      ],
+    );
+  }
 }

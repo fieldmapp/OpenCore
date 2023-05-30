@@ -1,3 +1,4 @@
+import 'package:meta/meta.dart';
 import 'package:open_core/core.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -6,13 +7,11 @@ import 'package:logger/logger.dart';
 final _logger = Logger();
 
 abstract class ModuleRoutes {
-  const ModuleRoutes(
-      {required this.parentModule,
-      required this.path,
-      required this.absolutePath});
+  const ModuleRoutes({required this.path, required this.completeFragment});
   final String path;
-  final String absolutePath;
-  final String parentModule;
+  final String completeFragment;
+
+  String get absolutePath;
 }
 
 class ModuleDependency<T extends Object> {
@@ -57,6 +56,7 @@ abstract class AppModule {
 
   AppModule();
 
+  /// Always add the Generic [T] in order for to retrive it correctly via get_it
   void init<T extends AppModule>() {
     if (!isInit) {
       _logger.d("init Module $moduleName");
@@ -83,6 +83,9 @@ abstract class AppModule {
       }
     }
   }
+
+  @protected
+  RouteBase buildRoutes();
 }
 
 abstract class RootModule extends AppModule {
