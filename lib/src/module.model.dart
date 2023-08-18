@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:open_core/core.dart';
 import 'package:get_it/get_it.dart';
@@ -57,7 +59,7 @@ abstract class AppModule {
   AppModule();
 
   /// Always add the Generic [T] in order for to retrive it correctly via get_it
-  void init<T extends AppModule>() {
+  FutureOr<void> init<T extends AppModule>() async {
     if (!isInit) {
       _logger.d("init Module $moduleName");
       checkDeps();
@@ -101,7 +103,7 @@ abstract class RootModule extends AppModule {
   RootModule({required this.subModules, required this.dependencies}) : super();
 
   @override
-  void init<T extends AppModule>() {
+  FutureOr<void> init<T extends AppModule>() async {
     if (!isInit) {
       _logger.d("init RootModule $moduleName");
       _setupDependencies(dependencies);
@@ -122,12 +124,12 @@ abstract class RootModule extends AppModule {
     }
   }
 
-  void _setupModules(List<AppModule> modules) {
+  FutureOr<void> _setupModules(List<AppModule> modules) async {
     GetIt locator = GetIt.I;
     final tabs = [];
     final List<RouteBase> routes = [];
     for (final mod in modules) {
-      mod.init();
+      await mod.init();
       tabs.add(mod.tab);
       routes.add(mod.routes);
     }
