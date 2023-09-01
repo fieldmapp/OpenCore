@@ -1,7 +1,4 @@
-import 'dart:io';
-
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart';
+part of core;
 
 // todo, add indicator off signal quality edge,
 // 3g, 5g ..., and only sync changes on good signal quality

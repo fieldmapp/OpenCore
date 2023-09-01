@@ -1,12 +1,4 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
-import 'package:open_core/core.dart';
-import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
-import 'package:open_core/src/exceptions/module_exception.dart';
+part of core;
 
 final _logger = Logger();
 
@@ -168,6 +160,8 @@ abstract class RootModule extends AppModule {
 
   RootModule({required this.subModules, required this.dependencies}) : super();
 
+  // TODO: this needs a rework since i cant enforce the implementation of this method in the implementing
+  // class of a RootModule
   static Future<RootModule> fromConfig(
       {required List<AppModule> subModules,
       required List<ModuleDependency> dependencies}) {

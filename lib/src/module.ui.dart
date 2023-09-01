@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
-import 'package:open_core/core.dart';
-import 'package:open_core/src/exceptions/module_exception.dart';
+part of core;
 
 abstract class ModulePage<T extends AppModule> extends StatelessWidget {
   final T module;
