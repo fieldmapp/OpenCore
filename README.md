@@ -35,5 +35,5 @@ https://codeahoy.com/2017/08/11/caching-strategies-and-how-to-choose-the-right-o
 ## Code Generation
 
 - generate code with `flutter packages pub run build_runner build --delete-conflicting-outputs`
-- this is needed to create the Hive-Adapters for the cachinglayer, currently used by `api/data` and `api/media`
+- this is needed to create the Hive-Adapters for the cachinglayer, currently used by `api/data`, `api/media` and `api/auth`
 
