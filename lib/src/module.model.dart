@@ -2,12 +2,36 @@ part of core;
 
 final _logger = Logger();
 
-abstract class ModuleRoutes {
-  const ModuleRoutes({required this.path, required this.completeFragment});
+class ModuleRouteBase {
+  const ModuleRouteBase(
+      {required this.path,
+      required this.completeFragment,
+      required this.modName});
   final String path;
   final String completeFragment;
+  final String modName;
 
-  String get absolutePath;
+  String get absolutePath => "/$modName$completeFragment";
+}
+
+class ModuleRoutes extends ModuleRouteBase {
+  const ModuleRoutes(
+      {required this.pageBuilder,
+      required super.path,
+      required super.completeFragment,
+      required super.modName});
+
+  final ModulePageBuilder pageBuilder;
+
+  factory ModuleRoutes.fromModuleRouteBase(
+      {required ModuleRouteBase routeBase,
+      required ModulePageBuilder pageBuilder}) {
+    return ModuleRoutes(
+        pageBuilder: pageBuilder,
+        path: routeBase.path,
+        completeFragment: routeBase.completeFragment,
+        modName: routeBase.modName);
+  }
 }
 
 class ModuleDependency<T extends Object> {
@@ -31,10 +55,42 @@ class ModuleDependency<T extends Object> {
   Type get dependencyType => T;
 }
 
+/// Helper Class which can be used to define links to other Modules or Pages
+/// outside of this Module.
+/// Idea is to Extend this class when a new Module is defined.
+///
+/// ```dart
+/// class ModuleAExternalLinks extends ExternalModuleLink {
+///   ModuleAExternalLinks({required super.home, required this.linkToModuleB});
+///   final ModuleRoutes linkToModuleB;
+/// }
+/// // usage
+/// final modA = ModuleA(externalModuleLink: ModuleAExternalLinks(
+///         home: RootRoutes.root, linkToModuleB: ModuleBRoutes.root)
+/// // called with
+/// modA.externalLinks.home
+/// ```
+///
+class ExternalModuleLink {
+  final ModuleRouteBase home;
+  ExternalModuleLink({required this.home});
+}
+
+/// Same as [ExternalModuleLink] but for Module internal Routing
+class InternalModuleLink {
+  final ModuleRoutes root;
+  InternalModuleLink({required this.root});
+
+  /// Maps each [ModuleRoutes] defined for this Module to an actual Page implementation
+  /// a Page implementation should be of Type [ModulePage] or [ModuleLandingPage]
+  /// which are wrapper for StatelessWidgets which require the Parent Module as constructor input
+  Map<ModuleRoutes, ModulePageBuilder> get pages =>
+      Map.of({root: root.pageBuilder});
+}
+
 /// TODO: Maybe a builder or fluent interface for the Module creation?
 abstract class AppModule {
-  // final GetIt locator = GetIt.I;
-
+  AppModule({ExternalModuleLink? externalModuleLink});
   Logger get logger => _logger;
 
   String get moduleName;
@@ -43,13 +99,15 @@ abstract class AppModule {
   // list all dependencies used in the module
   List<ModuleDependency> get dependencies;
 
-  Map<ModuleRoutes, ModulePageBuilder> get modulePages;
+  RouteBase get routes => buildRoutes();
 
-  RouteBase get routes;
+  /// (optional) Contains all routes/links to Modules/Widgets/Pages outside of this Module
+  ExternalModuleLink? get externalLinks;
 
-  ModuleRoutes get root;
-
-  List<ModuleRoutes> get moduleRoutes;
+  /// TODO: is it worth it? Benefit i see from that implementation is type safety
+  /// for accessing Routes within a Module and the api is similar to externalLinks
+  /// but the creation is more boilerplate than before
+  InternalModuleLink get internalLinks;
 
   /// Optional, if the getter gets implemented that Navbaritem is registered in the Global list of TabItems
   /// and can then be used to render a bottom navbar with those items
@@ -78,8 +136,6 @@ abstract class AppModule {
     logger.e(cause);
     throw ModuleException(cause: cause, type: ModuleExceptionType.dependency);
   }
-
-  AppModule();
 
   /// Always add the Generic [T] in order for to retrive it correctly via get_it
   FutureOr<void> init<T extends AppModule>() async {
@@ -122,10 +178,10 @@ abstract class AppModule {
   @protected
   RouteBase buildRoutes() {
     try {
-      final subroutes = modulePages.entries
+      final subroutes = internalLinks.pages.entries
           .where((element) =>
               element.key !=
-              root) // filter root bc we dont want to add it twice
+              internalLinks.root) // filter root bc we dont want to add it twice
           .map(
             (e) => GoRoute(
                 path: e.key.path,
@@ -134,9 +190,9 @@ abstract class AppModule {
           )
           .toList();
       return GoRoute(
-          path: root.absolutePath,
-          builder: modulePages[root]!.builder,
-          pageBuilder: modulePages[root]!.pagebuilder,
+          path: internalLinks.root.absolutePath,
+          builder: internalLinks.root.pageBuilder.builder,
+          pageBuilder: internalLinks.root.pageBuilder.pagebuilder,
           routes: subroutes);
     } on Exception catch (eRoute) {
       final cause =
@@ -173,7 +229,7 @@ abstract class RootModule extends AppModule {
     if (!isInit) {
       _logger.d("init RootModule $moduleName");
       _setupDependencies(dependencies);
-      _setupModules(subModules);
+      await _setupModules(subModules);
       GetIt.I.registerSingleton<T>(this as T, instanceName: moduleName);
       checkDeps();
       isInit = true;
@@ -206,6 +262,7 @@ abstract class RootModule extends AppModule {
       },
     );
     // register module routes
+    logger.d("Register routes $moduleName");
     locator.registerLazySingleton<List<RouteBase>>(() {
       return routes;
     }, instanceName: moduleName);
@@ -224,7 +281,7 @@ abstract class RootModule extends AppModule {
       logger.e("Error getting module Routes of $moduleName.");
     }
     try {
-      final rootSubroutes = modulePages.entries
+      final rootSubroutes = internalLinks.pages.entries
           .map(
             (e) => GoRoute(
                 path: e.key.absolutePath,

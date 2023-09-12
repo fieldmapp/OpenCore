@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:open_core/src/exceptions/module_exception.dart';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:open_core/src/api/auth/AuthService.extension.dart';
@@ -19,6 +18,7 @@ import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 
 export 'src/exceptions/connection_exception.dart';
+export 'src/exceptions/module_exception.dart';
 export 'src/widgets/expandable_fab.widget.dart';
 export 'src/widgets/info_container.widget.dart';
 export 'src/api/data/data_adapater.dart';

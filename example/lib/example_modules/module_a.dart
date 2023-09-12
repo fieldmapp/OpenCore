@@ -4,10 +4,9 @@ import 'package:open_core/core.dart';
 import 'package:get_it/get_it.dart';
 
 class ModuleA extends AppModule {
-  ModuleA() {
-    logger.i("Setup $moduleName");
+  ModuleA({required ModuleAExternalLinks externalModuleLink}) {
+    _externalLinks = externalModuleLink;
   }
-
   @override
   RouteBase buildRoutes() {
     // remove default implementation or implement your own RouteBase object here
@@ -15,65 +14,72 @@ class ModuleA extends AppModule {
   }
 
   @override
-  List<ModuleDependency<Object>> get dependencies => [ModuleDependency<ApiAuthRepository>()];
+  List<ModuleDependency<Object>> get dependencies =>
+      [ModuleDependency<ApiAuthRepository>()];
 
   @override
   String get moduleName => runtimeType.toString();
 
   @override
-  List<ModuleRoutes> get moduleRoutes => ModuleARoutes.values;
-
-  @override
-  ModuleRoutes get root => ModuleARoutes.root;
-
-  @override
-  RouteBase get routes => buildRoutes();
-
-  @override
   ScaffoldWithNavBarTabItem? get tab => ScaffoldWithNavBarTabItem(
-        initialLocation: ModuleARoutes.root.absolutePath,
+        initialLocation: internalLinks.root.absolutePath,
         icon: const Icon(Icons.home),
         label: 'Section A',
       );
 
+  @protected
+  late final ModuleAExternalLinks _externalLinks;
   @override
-  Map<ModuleRoutes, ModulePageBuilder> get modulePages {
-    final pages = <ModuleRoutes, ModulePageBuilder>{
-      ModuleARoutes.root: ModulePageBuilder(pagebuilder: (context, state) {
-        return NoTransitionPage(
-            child: AnotherScreen(
-                module: this,
-                key: UniqueKey(),
-                hasBottomBar: true,
-                locator: GetIt.I));
-      }),
-      ModuleARoutes.details: ModulePageBuilder(builder: (context, state) {
-        return AnotherDetail(module: this, key: UniqueKey());
-      })
-    };
-    return Map.of(pages);
+  ModuleAExternalLinks get externalLinks {
+    return _externalLinks;
   }
+
+  set externalLinks(ModuleAExternalLinks externalLinks) {
+    _externalLinks = externalLinks;
+  }
+
+  @override
+  ModuleAInternalLinks get internalLinks => ModuleAInternalLinks(
+      root: ModuleRoutes.fromModuleRouteBase(
+        routeBase: ModuleAInternalLinks.staticRoot,
+        pageBuilder: ModulePageBuilder(pagebuilder: (context, state) {
+          return NoTransitionPage(
+              child: AnotherScreen(
+                  module: this,
+                  key: UniqueKey(),
+                  hasBottomBar: true,
+                  locator: GetIt.I));
+        }),
+      ),
+      details: ModuleRoutes.fromModuleRouteBase(
+          routeBase: ModuleAInternalLinks.staticDetail,
+          pageBuilder: ModulePageBuilder(builder: (context, state) {
+            return AnotherDetail(module: this, key: UniqueKey());
+          })));
 }
 
-enum ModuleARoutes implements ModuleRoutes {
-  root(path: "a", completeFragment: "/a"),
-  details(path: "details", completeFragment: "/a/details");
-
-  const ModuleARoutes({required this.path, required this.completeFragment});
-
-  @override
-  final String path;
-
-  @override
-  final String completeFragment;
-
-  @override
-  String get absolutePath {
-    final modName = GetIt.I.get<AppModule>(instanceName: "ModuleA").moduleName;
-    return "/$modName$completeFragment";
-  }
+class ModuleAExternalLinks extends ExternalModuleLink {
+  ModuleAExternalLinks({required super.home, required this.linkToModuleB});
+  final ModuleRouteBase linkToModuleB;
 }
 
+class ModuleAInternalLinks extends InternalModuleLink {
+  ModuleAInternalLinks({required super.root, required this.details});
+  // defining those as statics helps in order to base them as ExternalLinks but it
+  // that is not absolutly mandatory
+  static ModuleRouteBase staticRoot = const ModuleRouteBase(
+      path: "a", completeFragment: "/a", modName: "ModuleA");
+  static ModuleRouteBase staticDetail = const ModuleRouteBase(
+      path: "detail", completeFragment: "/a/detail", modName: "ModuleA");
+  final ModuleRoutes details;
+
+  @override
+  Map<ModuleRoutes, ModulePageBuilder> get pages {
+    final pages = super.pages;
+    pages[details] = details.pageBuilder;
+    return pages;
+  }
+}
 
 // Test Pages
 class AnotherDetail extends ModulePage<ModuleA> {
@@ -81,7 +87,8 @@ class AnotherDetail extends ModulePage<ModuleA> {
 
   @override
   Widget build(BuildContext context) {
-    final authApi = module.getDependency<ApiAuthRepository>();
+    // final authApi = module.getDependency<ApiAuthRepository>();
+
     return Scaffold(
       appBar: AppBar(title: const Text('Another Detail')),
       body: Center(
@@ -89,7 +96,7 @@ class AnotherDetail extends ModulePage<ModuleA> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text("Another Detail"),
-            Text("${authApi.getUser()?.email}"),
+            // Text("${authApi.getUser()?.email}"),
             ElevatedButton(
                 onPressed: () => {context.pop()}, child: const Text("Back"))
           ],
@@ -124,12 +131,18 @@ class AnotherScreen extends ModuleLandingPage<ModuleA> {
           children: [
             const Text("Another screen"),
             ElevatedButton(
-              onPressed: () => context.push('/MainModule/home'),
+              onPressed: () =>
+                  context.push(module.externalLinks.home.absolutePath),
               child: const Text('Go home'),
             ),
             ElevatedButton(
-                onPressed: () =>
-                    GoRouter.of(context).push(ModuleARoutes.details.absolutePath),
+              onPressed: () =>
+                  context.push(module.externalLinks.linkToModuleB.absolutePath),
+              child: const Text('Go to b'),
+            ),
+            ElevatedButton(
+                onPressed: () => GoRouter.of(context)
+                    .push(module.internalLinks.details.absolutePath),
                 child: const Text("Another Detail"))
           ],
         ),

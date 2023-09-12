@@ -4,6 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:open_core/core.dart';
 
 class ModuleB extends AppModule {
+  ModuleB({required ModuleBExternalLinks externalModuleLink}) {
+    _externalLinks = externalModuleLink;
+  }
+
   @override
   List<ModuleDependency<Object>> get dependencies => [];
 
@@ -11,54 +15,40 @@ class ModuleB extends AppModule {
   String get moduleName => runtimeType.toString();
 
   @override
-  Map<ModuleRoutes, ModulePageBuilder> get modulePages {
-    final pages = <ModuleRoutes, ModulePageBuilder>{
-      ModuleBRoutes.root: ModulePageBuilder(pagebuilder: (context, state) {
-        return NoTransitionPage(
-            child: BDetailScreen(
-                module: this,
-                key: UniqueKey(),
-                hasBottomBar: true,
-                locator: GetIt.I));
-      })
-    };
-    return Map.of(pages);
-  }
-
-  @override
-  List<ModuleRoutes> get moduleRoutes => ModuleBRoutes.values;
-
-  @override
-  ModuleRoutes get root => ModuleBRoutes.root;
-
-  @override
-  RouteBase get routes => buildRoutes();
-
-  @override
   ScaffoldWithNavBarTabItem? get tab => ScaffoldWithNavBarTabItem(
-        initialLocation: ModuleBRoutes.root.absolutePath,
+        initialLocation: internalLinks.root.absolutePath,
         icon: const Icon(Icons.adb_rounded),
         label: 'Section b',
       );
+
+  late final ModuleBExternalLinks _externalLinks;
+  @override
+  ModuleBExternalLinks get externalLinks => _externalLinks;
+
+  @override
+  ModuleBInternalLinks get internalLinks => ModuleBInternalLinks(
+      root: ModuleRoutes.fromModuleRouteBase(
+          routeBase: ModuleBInternalLinks.rootStatic,
+          pageBuilder: ModulePageBuilder(pagebuilder: (context, state) {
+            return NoTransitionPage(
+                child: BDetailScreen(
+                    module: this,
+                    key: UniqueKey(),
+                    hasBottomBar: true,
+                    locator: GetIt.I));
+          })));
 }
 
-enum ModuleBRoutes implements ModuleRoutes {
-  root(path: "b", completeFragment: "/b"),
-  details(path: "details", completeFragment: "/b/details");
+class ModuleBExternalLinks extends ExternalModuleLink {
+  ModuleBExternalLinks({required super.home, required this.linkToModuleA});
+  final ModuleRouteBase linkToModuleA;
+}
 
-  const ModuleBRoutes({required this.path, required this.completeFragment});
+class ModuleBInternalLinks extends InternalModuleLink {
+  ModuleBInternalLinks({required super.root});
 
-  @override
-  final String path;
-
-  @override
-  final String completeFragment;
-
-  @override
-  String get absolutePath {
-    final modName = GetIt.I.get<AppModule>(instanceName: "ModuleB").moduleName;
-    return "/$modName$completeFragment";
-  }
+  static ModuleRouteBase rootStatic = const ModuleRouteBase(
+      path: "b", completeFragment: "/b", modName: "ModuleB");
 }
 
 class BDetailScreen extends ModuleLandingPage<ModuleB> {
@@ -67,10 +57,11 @@ class BDetailScreen extends ModuleLandingPage<ModuleB> {
       required super.hasBottomBar,
       required super.locator,
       required super.module});
-  
+
   @override
   Widget build(BuildContext context) {
     final tabs = locator<List<ScaffoldWithNavBarTabItem>>();
+
     return Scaffold(
       appBar: AppBar(title: const Text('Screen Module B')),
       bottomNavigationBar: hasBottomBar
@@ -86,7 +77,8 @@ class BDetailScreen extends ModuleLandingPage<ModuleB> {
           children: [
             const Text("Detail Mod B"),
             ElevatedButton(
-              onPressed: () => context.push('/home'),
+              onPressed: () =>
+                  context.push(module.externalLinks.home.absolutePath),
               child: const Text('Go home'),
             ),
           ],

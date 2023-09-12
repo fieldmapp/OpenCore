@@ -58,7 +58,10 @@ class AuthView extends StatelessWidget {
 
 class AuthLandingPage extends ModulePage {
   const AuthLandingPage(
-      {super.key, required this.apiService, required this.authSuccessRoute, required super.module});
+      {super.key,
+      required this.apiService,
+      required this.authSuccessRoute,
+      required super.module});
   final ApiAuthRepository apiService;
   final String authSuccessRoute;
 

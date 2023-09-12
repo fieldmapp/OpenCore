@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:example/login/auth.view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -24,31 +23,9 @@ class MainModule extends RootModule {
   String get moduleName => runtimeType.toString();
 
   @override
-  Map<ModuleRoutes, ModulePageBuilder> get modulePages {
-    final pages = <ModuleRoutes, ModulePageBuilder>{
-      RootRoutes.root: ModulePageBuilder(pagebuilder: (context, state) {
-        return NoTransitionPage(
-            child: HomeScreen(module: this, key: UniqueKey()));
-      }),
-      RootRoutes.login: ModulePageBuilder(
-          builder: ((context, state) => AuthLandingPage(
-              apiService: getDependency<ApiAuthRepository>(),
-              authSuccessRoute: RootRoutes.root.absolutePath,
-              module: this)))
-    };
-    return Map.of(pages);
-  }
-
-  @override
-  List<ModuleRoutes> get moduleRoutes => RootRoutes.values;
-
-  @override
-  ModuleRoutes get root => RootRoutes.root;
-
-  @override
   GoRouter get router => GoRouter(
-      redirect: redirectOnAuthGuard,
-      initialLocation: RootRoutes.root.absolutePath,
+      // redirect: redirectOnAuthGuard,
+      initialLocation: internalLinks.root.absolutePath,
       navigatorKey: _rootNavigatorKey,
       routes: [routes]);
 
@@ -73,44 +50,61 @@ class MainModule extends RootModule {
   FutureOr<String?> redirectOnAuthGuard(
       BuildContext context, GoRouterState state) async {
     final apiAuth = getDependency<ApiAuthRepository>();
-    final user =apiAuth.getUser();
+    final user = apiAuth.getUser();
     if (user != null) {
       final sessionOld = DateTime.now().toUtc().isAfter(user.getExpirey());
-      final hasNetwork = await getDependency<ConnectivityService>().hasNetwork();
+      final hasNetwork =
+          await getDependency<ConnectivityService>().hasNetwork();
       if (sessionOld && hasNetwork) {
         try {
           await apiAuth.cachedLogin();
         } catch (e) {
           await apiAuth.logOutCleanUp();
-          return RootRoutes.login.absolutePath;
+          return internalLinks.login.absolutePath;
         }
       }
       // user logged in no redirection needed, return null
       return null;
     }
     await apiAuth.logOutCleanUp();
-    return RootRoutes.login.absolutePath;
+    return internalLinks.login.absolutePath;
   }
 
+  @override
+  ExternalModuleLink? get externalLinks => throw UnimplementedError();
+
+  @override
+  RootModuleLinks get internalLinks => RootModuleLinks(
+      root: ModuleRoutes.fromModuleRouteBase(
+        routeBase: RootModuleLinks.staticRoot,
+        pageBuilder: ModulePageBuilder(pagebuilder: (context, state) {
+          return NoTransitionPage(
+              child: HomeScreen(module: this, key: UniqueKey()));
+        }),
+      ),
+      login: ModuleRoutes.fromModuleRouteBase(
+          routeBase: RootModuleLinks.staticLogin,
+          pageBuilder: ModulePageBuilder(
+              builder: ((context, state) => AuthLandingPage(
+                  apiService: getDependency<ApiAuthRepository>(),
+                  authSuccessRoute: internalLinks.root.absolutePath,
+                  module: this)))));
 }
 
-enum RootRoutes implements ModuleRoutes {
-  root(path: "/home", completeFragment: "/home"),
-  login(path: "/login", completeFragment: "/login");
+class RootModuleLinks extends InternalModuleLink {
+  RootModuleLinks({required super.root, required this.login});
+  final ModuleRoutes login;
 
-  const RootRoutes({required this.path, required this.completeFragment});
-
-  @override
-  final String path;
-
-  @override
-  final String completeFragment;
+  static ModuleRouteBase staticRoot = const ModuleRouteBase(
+      path: "home", completeFragment: "/home", modName: "MainModule");
+  static ModuleRouteBase staticLogin = const ModuleRouteBase(
+      path: "login", completeFragment: "/login", modName: "MainModule");
 
   @override
-  String get absolutePath {
-    final modName =
-        GetIt.I.get<MainModule>(instanceName: "MainModule").moduleName;
-    return "/$modName$completeFragment";
+  Map<ModuleRoutes, ModulePageBuilder> get pages {
+    final pages = super.pages;
+    pages[login] = login.pageBuilder;
+    return pages;
   }
 }
 
@@ -119,37 +113,44 @@ class HomeScreen extends ModulePage<MainModule> {
 
   @override
   Widget build(BuildContext context) {
+    final modLinks = module.subModules.map(
+      (e) {
+        return ElevatedButton(
+          onPressed: () => context.go(e.internalLinks.root.absolutePath),
+          child: Text('Go to Module ${e.moduleName}'),
+        );
+      },
+    ).toList();
+
+    ApiAuthRepository? apiAuth;
+    try {
+      apiAuth = module.getDependency<ApiAuthRepository>();
+    } catch (e) {}
     return Scaffold(
       appBar: AppBar(title: const Text('Home Screen')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: () async {
-                final apiAuth = module.getDependency<ApiAuthRepository>();
-                await apiAuth.logout(onLogout: () {
-                  // remove user data/cache on log out
-                  GetIt.I.get<ApiDataRepository>().emptyCache(
-                        () async {},
-                      );
-                  GetIt.I.get<ApiMediaRepository>().emptyCache(
-                        () async {},
-                      );
-                  GoRouter.of(context).refresh();
-                });
-              },
-              child: const Text('Logout'),
-            ),
-            ElevatedButton(
-              onPressed: () => context
-                  .go(module.subModules.first.moduleRoutes.first.absolutePath),
-              child: const Text('Go to Module A'),
-            ),
-            ElevatedButton(
-              onPressed: () => context.go(module.subModules.last.moduleRoutes.first.absolutePath),
-              child: const Text('Go to Module B'),
-            ),
+            apiAuth != null
+                ? ElevatedButton(
+                    onPressed: () async {
+                      final apiAuth = module.getDependency<ApiAuthRepository>();
+                      await apiAuth.logout(onLogout: () {
+                        // remove user data/cache on log out
+                        GetIt.I.get<ApiDataRepository>().emptyCache(
+                              () async {},
+                            );
+                        GetIt.I.get<ApiMediaRepository>().emptyCache(
+                              () async {},
+                            );
+                        GoRouter.of(context).refresh();
+                      });
+                    },
+                    child: const Text('Logout'),
+                  )
+                : Container(),
+            ...modLinks
           ],
         ),
       ),
