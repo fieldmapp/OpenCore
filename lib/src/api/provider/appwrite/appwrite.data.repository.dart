@@ -1,9 +1,14 @@
-// import 'package:open_core/core.dart';
-// import 'package:appwrite/appwrite.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:logger/logger.dart';
-
 part of core;
+
+DataProxy fromDoc(Document doc) {
+  final res = DataProxy(
+      databaseId: doc.$databaseId,
+      collectionId: doc.$collectionId,
+      docId: doc.$id,
+      revision: doc.data["revision"],
+      content: doc.data);
+  return res;
+}
 
 class AppwriteDataRepository extends ApiDataRepository {
   final Databases database;
@@ -33,7 +38,7 @@ class AppwriteDataRepository extends ApiDataRepository {
               collectionId: collectionId,
               documentId: entryId)
           .timeout(timelimit);
-      return DataProxy.fromDoc(doc);
+      return DataProxy.fromCallback(callBack: () => fromDoc(doc));
     } on AppwriteException catch (eApp) {
       throw ConnectionException(
           cause: eApp.message, code: eApp.code, type: eApp.type);
@@ -55,7 +60,9 @@ class AppwriteDataRepository extends ApiDataRepository {
             queries: queries)
         .timeout(timelimit);
 
-    final res = docs.documents.map((e) => DataProxy.fromDoc(e)).toList();
+    final res = docs.documents
+        .map((e) => DataProxy.fromCallback(callBack: () => fromDoc(e)))
+        .toList();
     return res;
   }
 
@@ -73,7 +80,7 @@ class AppwriteDataRepository extends ApiDataRepository {
               documentId: entryId,
               data: data)
           .timeout(timelimit);
-      return DataProxy.fromDoc(res);
+      return DataProxy.fromCallback(callBack: () => fromDoc(res));
     } on AppwriteException catch (eApp) {
       throw ConnectionException(
           cause: eApp.message, code: eApp.code, type: eApp.type);
