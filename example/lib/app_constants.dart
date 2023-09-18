@@ -1,8 +1,8 @@
 class AppConstant {
-  String projectId = "643eb329c7df6589d25d";
-  String endpoint = "https://23f9-195-37-61-178.ngrok-free.app/v1";
-  String databaseId = "643f95676aaad09bcd38";
-  Set<String> collections = {};
-  Set<String> buckets = {};
+  String projectId = "650836a449fc80a7029a";
+  String endpoint = "http://localhost:80/v1";
+  String databaseId = "fm_uploader_db_1";
+  Set<String> collections = {"col1-doc", "col2-doc"};
+  Set<String> buckets = {"data_mod_bucket"};
   bool selfSigned = true; // dev-stage only
 }

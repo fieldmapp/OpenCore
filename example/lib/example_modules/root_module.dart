@@ -24,7 +24,7 @@ class MainModule extends RootModule {
 
   @override
   GoRouter get router => GoRouter(
-      // redirect: redirectOnAuthGuard,
+      redirect: redirectOnAuthGuard,
       initialLocation: internalLinks.root.absolutePath,
       navigatorKey: _rootNavigatorKey,
       routes: [routes]);

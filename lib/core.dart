@@ -1,7 +1,7 @@
 library core;
 
 import 'dart:async';
-import 'package:appwrite/models.dart';
+import 'package:appwrite/models.dart' hide User, File;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';

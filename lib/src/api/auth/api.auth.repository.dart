@@ -1,4 +1,3 @@
-
 part of core;
 
 abstract class ApiAuth {

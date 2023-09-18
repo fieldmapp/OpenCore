@@ -45,10 +45,7 @@ class ModuleA extends AppModule {
         pageBuilder: ModulePageBuilder(pagebuilder: (context, state) {
           return NoTransitionPage(
               child: AnotherScreen(
-                  module: this,
-                  key: UniqueKey(),
-                  hasBottomBar: true,
-                  locator: GetIt.I));
+                  module: this, key: UniqueKey(), hasBottomBar: true));
         }),
       ),
       details: ModuleRoutes.fromModuleRouteBase(
@@ -108,14 +105,11 @@ class AnotherDetail extends ModulePage<ModuleA> {
 
 class AnotherScreen extends ModuleLandingPage<ModuleA> {
   AnotherScreen(
-      {super.key,
-      required super.hasBottomBar,
-      required super.locator,
-      required super.module});
+      {super.key, required super.hasBottomBar, required super.module});
 
   @override
   Widget build(BuildContext context) {
-    final tabs = locator<List<ScaffoldWithNavBarTabItem>>();
+    final tabs = GetIt.I.get<List<ScaffoldWithNavBarTabItem>>();
     return Scaffold(
       appBar: AppBar(title: const Text('Another Screen')),
       bottomNavigationBar: hasBottomBar

@@ -32,10 +32,7 @@ class ModuleB extends AppModule {
           pageBuilder: ModulePageBuilder(pagebuilder: (context, state) {
             return NoTransitionPage(
                 child: BDetailScreen(
-                    module: this,
-                    key: UniqueKey(),
-                    hasBottomBar: true,
-                    locator: GetIt.I));
+                    module: this, key: UniqueKey(), hasBottomBar: true));
           })));
 }
 
@@ -53,14 +50,11 @@ class ModuleBInternalLinks extends InternalModuleLink {
 
 class BDetailScreen extends ModuleLandingPage<ModuleB> {
   BDetailScreen(
-      {super.key,
-      required super.hasBottomBar,
-      required super.locator,
-      required super.module});
+      {super.key, required super.hasBottomBar, required super.module});
 
   @override
   Widget build(BuildContext context) {
-    final tabs = locator<List<ScaffoldWithNavBarTabItem>>();
+    final tabs = GetIt.I.get<List<ScaffoldWithNavBarTabItem>>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Screen Module B')),

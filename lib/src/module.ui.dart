@@ -23,15 +23,12 @@ class ModulePageBuilder {
 }
 
 /// TODO: Add BottomBar to this widget
-abstract class ModuleLandingPage<T extends AppModule> extends ModulePage<T> with ModuleLandingPageUtil {
+abstract class ModuleLandingPage<T extends AppModule> extends ModulePage<T>
+    with ModuleLandingPageUtil {
   final bool hasBottomBar;
-  final GetIt locator;
 
   ModuleLandingPage(
-      {super.key,
-      required this.hasBottomBar,
-      required this.locator,
-      required super.module});
+      {super.key, required this.hasBottomBar, required super.module});
 }
 
 mixin ModuleLandingPageUtil {

@@ -35,8 +35,6 @@ Future<RootModule> setupMultiModuleEx() async {
 
   // listen to connectivity changes globally and indicate changes
   connectionService.indicateConnectionChanges(scaffoldKey: scaffoldKey);
-  // final modA = ModuleA();
-  // final modB = ModuleB();
   final RootModule mainMod = await MainModule.fromConfig(dependencies: [
     // // GLOBAL scaffold key
     ModuleDependency<GlobalKey<ScaffoldMessengerState>>(toInject: scaffoldKey),

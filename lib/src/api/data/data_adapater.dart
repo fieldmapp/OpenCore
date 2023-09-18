@@ -29,7 +29,8 @@ class DataProxy extends HiveObject {
   factory DataProxy.fromCallback({required DataProxy Function() callBack}) {
     final Logger logger = Logger();
     try {
-      return callBack();
+      final res = callBack();
+      return res;
     } on Exception catch (e) {
       logger.e("Something went wrong creating DataProxy from callBack");
       logger.e(e);
