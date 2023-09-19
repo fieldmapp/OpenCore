@@ -43,13 +43,13 @@ class DataDocViewConsumer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: implement build
     final docProvider = docControllerProvider(collectionID, docID, revision);
     final doc = ref.watch(docProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text("DOC")),
       floatingActionButton: ExpandableFab(distance: 60, children: [
+        // remove doc
         ActionButton(
             onPressed: () async {
               await ref.read(docProvider.notifier).removeDoc(
@@ -61,6 +61,7 @@ class DataDocViewConsumer extends ConsumerWidget {
               }
             },
             icon: const Icon(Icons.delete_rounded)),
+        // update/save doc
         ActionButton(
             onPressed: () async {
               await ref
@@ -103,6 +104,7 @@ class DataDocViewConsumer extends ConsumerWidget {
                                   onChanged: (value) {
                                     val = value;
                                   },
+                                  // Update document
                                   onFieldSubmitted: (value) async {
                                     await ref
                                         .read(docProvider.notifier)

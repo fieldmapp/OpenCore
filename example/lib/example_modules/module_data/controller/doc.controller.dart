@@ -25,6 +25,7 @@ class DocController extends _$DocController {
       _currentDoc = (await getDoc(
           collectionID: collectionID, docID: docId, revision: revision))!;
     } catch (e) {
+      logger.e("Something went wrong getting current doc: $docId", e);
       _currentDoc = Document.fromMap({});
     }
 

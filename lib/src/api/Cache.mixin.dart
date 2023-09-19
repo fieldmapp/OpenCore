@@ -17,6 +17,18 @@ class CacheOp {
   CacheOp(this.entryId, this.parentId, this.isSyncing);
 }
 
+class CacheEventManager<T extends CacheOp> {
+  final StreamController<void> _cacheOpEventController =
+      StreamController<void>.broadcast();
+
+  // External methods to trigger cache events
+  void notifyCacheOp() {
+    _cacheOpEventController.add(null);
+  }
+
+  Stream<void> get cacheOpEventStream => _cacheOpEventController.stream;
+}
+
 abstract class CacheUtils {
   Future<void> emptyCache(AsyncCallback? onEmptyCache);
   Future<bool> entryNeedsSync({required String id});
@@ -58,6 +70,8 @@ mixin Cache {
   final _aOptions = const AndroidOptions(encryptedSharedPreferences: true);
   final _iOptions =
       const IOSOptions(accessibility: KeychainAccessibility.first_unlock);
+
+  final CacheEventManager<CacheOp> eventManager = CacheEventManager<CacheOp>();
 
   /// Initializes the Cache Mixin and registers all provided [TypeAdapter]s.
   ///
@@ -195,6 +209,7 @@ mixin Cache {
       {required T op, required String id, required String boxId}) async {
     try {
       await addToCache<T>(boxId: boxId, entryId: id, cacheObj: op);
+      eventManager.notifyCacheOp();
     } on Exception catch (e) {
       logger.e(e);
       rethrow;
@@ -205,8 +220,10 @@ mixin Cache {
   @protected
   Future<void> removeCacheOp<T extends CacheOp>(
       {required id, required boxId}) async {
+    logger.d("Remove CacheOP $id");
     if (await needsSync<T>(id: id, cacheOpKey: boxId)) {
       await removeFromCache<T>(boxId: boxId, entryId: id);
+      eventManager.notifyCacheOp();
     }
   }
 
@@ -263,35 +280,25 @@ mixin Cache {
 
   /// Returns a stream of open CacheOperations, for this CacheMixin.
   ///
-  /// You can configure the refresh rate by passing a Duration as [interval].
   @protected
   Stream<Map<String, T>> getCacheOperationStream<T extends CacheOp>(
-      {required Duration interval, required String cacheOpKey}) {
+      {required String cacheOpKey}) {
     late StreamController<Map<String, T>> controller;
-    Timer? timer;
     Map<String, T> cacheMap = {};
 
-    Future<void> tick(_) async {
-      logger.i(cacheMap.entries.length);
+    StreamSubscription? eventSub;
+    controller = StreamController<Map<String, T>>(onListen: () async {
+      // Attach event listener
       cacheMap = await getAllCacheOperations<T>(boxId: cacheOpKey);
       controller.add(cacheMap);
-    }
-
-    void startTimer() {
-      timer = Timer.periodic(interval, tick);
-    }
-
-    void stopTimer() {
-      timer?.cancel();
-      timer = null;
-    }
-
-    controller = StreamController<Map<String, T>>(
-        onListen: startTimer,
-        onPause: stopTimer,
-        onResume: startTimer,
-        onCancel: stopTimer);
-
+      eventSub = eventManager.cacheOpEventStream.listen((_) async {
+        cacheMap = await getAllCacheOperations<T>(boxId: cacheOpKey);
+        controller.add(cacheMap);
+      });
+    }, onCancel: () {
+      eventSub!.cancel();
+      // Handle cleanup if needed
+    });
     return controller.stream;
   }
 

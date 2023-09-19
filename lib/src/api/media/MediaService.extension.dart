@@ -32,8 +32,7 @@ mixin MediaCacheUtils implements Cache, CacheUtils {
   @override
   Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>(
       {required Duration interval}) {
-    return getCacheOperationStream<T>(
-        interval: interval, cacheOpKey: cacheOpKey);
+    return getCacheOperationStream<T>(cacheOpKey: cacheOpKey);
   }
 }
 

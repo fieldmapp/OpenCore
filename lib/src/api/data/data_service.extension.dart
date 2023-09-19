@@ -29,8 +29,7 @@ mixin DataCacheUtils implements Cache, CacheUtils {
   @override
   Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>(
       {required Duration interval}) {
-    return getCacheOperationStream<T>(
-        interval: interval, cacheOpKey: cacheOpKey);
+    return getCacheOperationStream<T>(cacheOpKey: cacheOpKey);
   }
 }
 
@@ -314,10 +313,11 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
         break;
       default:
         final msg =
-            "Cacheoperation of type ${cacheOperation.operationType} is unkown and can not bbe handeld!";
+            "Cacheoperation of type ${cacheOperation.operationType} is unkown and can not be handeld!";
         logger.e(msg);
         throw DataException(cause: msg);
     }
+    eventManager.notifyCacheOp();
   }
 
   Future<void> syncLocalChanges() async {
