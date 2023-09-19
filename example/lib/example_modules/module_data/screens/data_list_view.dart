@@ -10,6 +10,7 @@ class DataListView extends ModuleLandingPage<DataModule> {
   @override
   Widget build(BuildContext context) {
     final dbApi = module.getDependency<ApiDataRepository>();
+    final mediaApi = module.getDependency<ApiMediaRepository>();
     final List<Widget> collectionLinks = module.collections.map(
       (e) {
         return ElevatedButton(
@@ -71,12 +72,20 @@ class DataListView extends ModuleLandingPage<DataModule> {
                   enableDrag: true,
                   builder: (BuildContext context) {
                     // return getCacheOpList();
-                    return CacheOperationList(
+                    return CacheOperationList<DataCacheOperation>(
                       getOpStream: () =>
                           dbApi.cacheOperationStream<DataCacheOperation>(
                               interval: const Duration(seconds: 1)),
                       pathToDoc: module.internalLinks.doc.absolutePath,
                       syncChanges: () => dbApi.syncLocalChanges(),
+                      listBuilder: (
+                              {required basePath,
+                              required isSyncing,
+                              required valueMap}) =>
+                          DataCacheOpListView(
+                              valueMap: valueMap,
+                              isSyncing: isSyncing,
+                              pathToDoc: basePath),
                     );
                   });
             },
@@ -84,7 +93,34 @@ class DataListView extends ModuleLandingPage<DataModule> {
             child: const Icon(Icons.change_circle),
           ),
           FloatingActionButton.small(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet<void>(
+                  context: context,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  isScrollControlled: true,
+                  enableDrag: true,
+                  builder: (BuildContext context) {
+                    // return getCacheOpList();
+                    return CacheOperationList<FileCacheOperation>(
+                      getOpStream: () =>
+                          mediaApi.cacheOperationStream<FileCacheOperation>(),
+                      pathToDoc: module.internalLinks.doc.absolutePath,
+                      syncChanges: () => mediaApi.syncLocalChanges(),
+                      listBuilder: (
+                              {required basePath,
+                              required isSyncing,
+                              required valueMap}) =>
+                          FileCacheOpListview(
+                              valueMap: valueMap,
+                              isSyncing: isSyncing,
+                              pathToDoc:
+                                  module.internalLinks.bucket.absolutePath),
+                    );
+                  });
+            },
             backgroundColor: Colors.amberAccent,
             child: const Icon(Icons.perm_media_rounded),
           )

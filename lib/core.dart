@@ -26,6 +26,7 @@ export 'src/api/data/data_adapater.dart';
 export 'src/api/data/cache/data_cache_operation.dart';
 export 'src/api/media/cache/file_cache_operation.dart';
 export 'src/api/media/file_adapater.dart';
+export 'src/api/Cache.mixin.dart';
 
 part 'src/module.model.dart';
 part 'src/module.ui.dart';

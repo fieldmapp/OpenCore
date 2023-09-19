@@ -32,8 +32,7 @@ class CacheEventManager<T extends CacheOp> {
 abstract class CacheUtils {
   Future<void> emptyCache(AsyncCallback? onEmptyCache);
   Future<bool> entryNeedsSync({required String id});
-  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>(
-      {required Duration interval});
+  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>();
 }
 
 abstract class FileCacheManager {
