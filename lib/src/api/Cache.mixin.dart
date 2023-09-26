@@ -262,6 +262,7 @@ mixin Cache {
       await box.clear();
       await box.flush();
     }
+    eventManager.notifyCacheOp();
     logger.i("CACHE COLLECTION FLUSHED!");
   }
 
@@ -318,6 +319,16 @@ mixin Cache {
   Future<void> setFileToCache({required String key, required File file}) async {
     if (_fileCacheManager != null) {
       await _fileCacheManager!.setFile(key: key, file: file);
+      return;
+    }
+    logger.e("No FileCacheManager set for this CacheMixin!");
+  }
+
+  @protected
+  Future<void> removeFileFromCache({required String key}) async {
+    if (_fileCacheManager != null) {
+      await _fileCacheManager!.removeFile(key: key);
+      logger.i("File with key $key removed from cache!");
       return;
     }
     logger.e("No FileCacheManager set for this CacheMixin!");

@@ -27,8 +27,7 @@ mixin DataCacheUtils implements Cache, CacheUtils {
   }
 
   @override
-  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>(
-      {required Duration interval}) {
+  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>() {
     return getCacheOperationStream<T>(cacheOpKey: cacheOpKey);
   }
 }

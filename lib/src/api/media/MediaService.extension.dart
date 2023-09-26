@@ -204,10 +204,14 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
     );
 
     try {
+      // Fileproxy
       await addToCache<FileProxy>(
           boxId: bucketId, entryId: fileId, cacheObj: preData);
+      // write actual file to cache
       await setFileToCache(key: fileId, file: file);
+      // create the file on the remote
       await createFile(bucket: bucketId, fileId: fileId, file: file);
+      // remove cach op (only done if needed)
       await removeCacheOp<FileCacheOperation>(
           id: fileId, boxId: _fileCacheOpKey);
     } on ConnectionException catch (eCon) {
@@ -245,6 +249,7 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
     try {
       await removeFromCache<FileProxy>(boxId: bucketId, entryId: fileId);
       await deleteFile(bucket: bucketId, fileId: fileId);
+      await removeFileFromCache(key: fileId);
       logger.i("Deleted file $fileId from bucket $bucketId");
     } on ConnectionException catch (eApp) {
       logger.e("Connection exception! ${eApp.cause}");
@@ -269,6 +274,9 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
     switch (cacheOperation.operationType) {
       case FileCacheOperationType.upload:
         await cacheOperation.delete();
+        await removeFromCache<FileProxy>(
+            boxId: cacheOperation.parentId, entryId: cacheOperation.entryId);
+        await removeFileFromCache(key: cacheOperation.entryId);
         await createFileUpload(
             bucketId: cacheOperation.parentId,
             fileName: cacheOperation.fileName,
@@ -287,6 +295,7 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
         logger.e(msg);
         throw MediaException(cause: msg);
     }
+    eventManager.notifyCacheOp();
   }
 
   Future<void> syncLocalChanges() async {

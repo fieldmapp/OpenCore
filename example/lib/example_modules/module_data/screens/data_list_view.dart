@@ -1,4 +1,6 @@
 import 'package:example/example_modules/module_data/module_data.dart';
+import 'package:example/example_modules/module_data/service/doc.service.dart';
+import 'package:example/example_modules/module_data/service/media.service.dart';
 import 'package:example/example_modules/module_data/widgets/data_cache_op_list.dart';
 import 'package:flutter/material.dart';
 import 'package:open_core/core.dart';
@@ -44,23 +46,20 @@ class DataListView extends ModuleLandingPage<DataModule> {
     ).toList();
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text("DataListview"),
-            ...collectionLinks,
-            ...bucketLinks
-          ],
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("DataListview"),
+              ...collectionLinks,
+              ...bucketLinks
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton.small(
+        floatingActionButton: ExpandableFab(distance: 80, children: [
+          ActionButton(
             onPressed: () {
               showModalBottomSheet<void>(
                   context: context,
@@ -74,8 +73,7 @@ class DataListView extends ModuleLandingPage<DataModule> {
                     // return getCacheOpList();
                     return CacheOperationList<DataCacheOperation>(
                       getOpStream: () =>
-                          dbApi.cacheOperationStream<DataCacheOperation>(
-                              interval: const Duration(seconds: 1)),
+                          dbApi.cacheOperationStream<DataCacheOperation>(),
                       pathToDoc: module.internalLinks.doc.absolutePath,
                       syncChanges: () => dbApi.syncLocalChanges(),
                       listBuilder: (
@@ -89,10 +87,9 @@ class DataListView extends ModuleLandingPage<DataModule> {
                     );
                   });
             },
-            backgroundColor: Colors.amber,
-            child: const Icon(Icons.change_circle),
+            icon: const Icon(Icons.change_circle),
           ),
-          FloatingActionButton.small(
+          ActionButton(
             onPressed: () {
               showModalBottomSheet<void>(
                   context: context,
@@ -121,11 +118,15 @@ class DataListView extends ModuleLandingPage<DataModule> {
                     );
                   });
             },
-            backgroundColor: Colors.amberAccent,
-            child: const Icon(Icons.perm_media_rounded),
+            icon: const Icon(Icons.perm_media_rounded),
+          ),
+          ActionButton(
+            icon: const Icon(Icons.clear_all),
+            onPressed: () async {
+              await DocService().resetDataCache();
+              await MediaService().resetMediaCache();
+            },
           )
-        ],
-      ),
-    );
+        ]));
   }
 }

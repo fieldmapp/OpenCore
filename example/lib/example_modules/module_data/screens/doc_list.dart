@@ -123,7 +123,7 @@ class DocListConsumer extends ConsumerWidget {
                 child: InfoContainer(
                     icon: Icons.error,
                     title: "Something went wrong",
-                    subTitle: stackTrace.toString()));
+                    subTitle: error.toString()));
           },
           loading: () {
             return const Center(child: CircularProgressIndicator());
