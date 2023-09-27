@@ -131,6 +131,7 @@ class DataCacheOpListView extends StatelessWidget {
                 "$pathToDoc/${entry.value.parentId}/${entry.value.entryId}/${entry.value.revision}"),
             child: Material(
                 elevation: isSyncing ? 10 : 1,
+                color: entry.value.error != null ? Colors.red : Colors.white,
                 borderRadius: BorderRadius.circular(10),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -163,6 +164,12 @@ class DataCacheOpListView extends StatelessWidget {
                       ],
                     ),
                     const Divider(),
+                    entry.value.error != null
+                        ? InfoContainer(
+                            title: "Error",
+                            subTitle: "${entry.value.error!["cause"]}",
+                            icon: Icons.error)
+                        : Container(),
                     ...entry.value.data.entries.map((e) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -216,6 +223,7 @@ class FileCacheOpListview extends StatelessWidget {
             child: Material(
                 elevation: isSyncing ? 10 : 1,
                 borderRadius: BorderRadius.circular(10),
+                color: entry.value.error != null ? Colors.red : Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(children: [
@@ -247,6 +255,12 @@ class FileCacheOpListview extends StatelessWidget {
                       ],
                     ),
                     const Divider(),
+                    entry.value.error != null
+                        ? InfoContainer(
+                            title: "Error",
+                            subTitle: "${entry.value.error!["cause"]}",
+                            icon: Icons.error)
+                        : Container(),
                     isSyncing ? const LinearProgressIndicator() : Container(),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -181,12 +181,13 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
       required Uint8List fileBytes}) async {
     final fileId = uuid.v4();
 
-    onError() async {
+    onError({Map<String, dynamic>? error}) async {
       final cacheOp = FileCacheOperation(
           entryId: fileId,
           parentId: bucketId,
           fileName: fileName,
           operationType: FileCacheOperationType.upload,
+          error: error,
           data: fileBytes);
       await addCacheOp<FileCacheOperation>(
           op: cacheOp, id: fileId, boxId: _fileCacheOpKey);
@@ -219,7 +220,7 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
       if (eCon.type == null) {
         await onError();
       } else {
-        rethrow;
+        await onError(error: {"cause": eCon.cause, "type": eCon.type});
       }
     } on TimeoutException catch (eTime) {
       logger.e(eTime);
@@ -248,6 +249,8 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
 
     try {
       await removeFromCache<FileProxy>(boxId: bucketId, entryId: fileId);
+      await removeFromCache<FileCacheOperation>(
+          boxId: _fileCacheOpKey, entryId: fileId);
       await deleteFile(bucket: bucketId, fileId: fileId);
       await removeFileFromCache(key: fileId);
       logger.i("Deleted file $fileId from bucket $bucketId");
@@ -265,6 +268,7 @@ abstract class Media with Cache, MediaCacheUtils implements ApiMedia {
       logger.e("Other exception deleting file $fileId from bucket $bucketId");
       rethrow;
     }
+    eventManager.notifyCacheOp();
   }
 
   Future<void> syncSingleChange(

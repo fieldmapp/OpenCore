@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:open_core/core.dart';
 import 'package:go_router/go_router.dart';
+import 'package:appwrite/models.dart';
 
 class DataDocView extends ModulePage<DataModule> {
   final String docID;
@@ -72,87 +73,25 @@ class DataDocViewConsumer extends ConsumerWidget {
       ]),
       body: doc.when(
           data: (currentDoc) {
-            return Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                      child: RefreshIndicator(
-                    onRefresh: (() async {
-                      await ref.read(docProvider.notifier).getNewestVersion();
-                    }),
-                    child: ListView.builder(
-                        itemCount: currentDoc.data.length,
-                        itemBuilder: (context, index) {
-                          var val = currentDoc.data.values
-                              .elementAt(index)
-                              .toString();
-                          final field = currentDoc.data.keys.elementAt(index);
-                          final isNum = isNumeric(val);
-                          // TODO implement actual change detection with history
-                          // - history controller
-                          // - workflow when to update values
-                          Widget valWidget = field.startsWith("\$")
-                              ? Text(val, overflow: TextOverflow.ellipsis)
-                              : TextFormField(
-                                  keyboardType: isNum
-                                      ? TextInputType.number
-                                      : TextInputType.text,
-                                  inputFormatters: isNum
-                                      ? [FilteringTextInputFormatter.digitsOnly]
-                                      : [],
-                                  onChanged: (value) {
-                                    val = value;
-                                  },
-                                  // Update document
-                                  onFieldSubmitted: (value) async {
-                                    await ref
-                                        .read(docProvider.notifier)
-                                        .updateDoc(data: {field: value});
-                                  },
-                                  initialValue: val,
-                                  decoration: InputDecoration(
-                                      hintText: field,
-                                      hintStyle: const TextStyle(
-                                          color: Colors.grey, fontSize: 12.0)),
-                                  style: const TextStyle(
-                                      fontFamily: "Poppins-Bold"));
-                          return Material(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    field,
-                                    overflow: TextOverflow.clip,
-                                    style: const TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  valWidget
-                                ]),
-                          ));
-                        }),
-                  ))
-                ]);
+            return DocView(
+                ref: ref, docProvider: docProvider, currentDoc: currentDoc);
           },
-          error: (error, stackTrace) => Center(
-                  child: Column(
-                children: [
-                  InfoContainer(
-                      icon: Icons.error,
-                      title: "Something went wrong",
-                      subTitle: stackTrace.toString()),
-                  TextButton(
-                      onPressed: () {
-                        ref.read(docProvider.notifier).getNewestVersion();
-                      },
-                      child: const Text("Back to doc"))
-                ],
-              )),
+          error: (error, stackTrace) {
+            return Center(
+                child: Column(
+              children: [
+                InfoContainer(
+                    icon: Icons.error,
+                    title: "Something went wrong",
+                    subTitle: error.toString()),
+                TextButton(
+                    onPressed: () {
+                      ref.read(docProvider.notifier).getNewestVersion();
+                    },
+                    child: const Text("Back to doc"))
+              ],
+            ));
+          },
           loading: () => const Center(child: CircularProgressIndicator())),
     );
   }
@@ -160,4 +99,82 @@ class DataDocViewConsumer extends ConsumerWidget {
 
 bool isNumeric(String s) {
   return double.tryParse(s) != null;
+}
+
+class DocView extends StatelessWidget {
+  const DocView(
+      {super.key,
+      required this.ref,
+      required this.docProvider,
+      required this.currentDoc});
+
+  final WidgetRef ref;
+  final DocControllerProvider docProvider;
+  final Document currentDoc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+              child: RefreshIndicator(
+            onRefresh: (() async {
+              await ref.read(docProvider.notifier).getNewestVersion();
+            }),
+            child: ListView.builder(
+                itemCount: currentDoc.data.length,
+                itemBuilder: (context, index) {
+                  var val = currentDoc.data.values.elementAt(index).toString();
+                  final field = currentDoc.data.keys.elementAt(index);
+                  final isNum = isNumeric(val);
+                  // TODO implement actual change detection with history
+                  // - history controller
+                  // - workflow when to update values
+                  Widget valWidget = field.startsWith("\$") ||
+                          field == "revision"
+                      ? Text(val, overflow: TextOverflow.ellipsis)
+                      : TextFormField(
+                          keyboardType:
+                              isNum ? TextInputType.number : TextInputType.text,
+                          inputFormatters: isNum
+                              ? [FilteringTextInputFormatter.digitsOnly]
+                              : [],
+                          onChanged: (value) {
+                            val = value;
+                          },
+                          // Update document
+                          onFieldSubmitted: (value) async {
+                            await ref
+                                .read(docProvider.notifier)
+                                .updateDoc(data: {field: value});
+                          },
+                          initialValue: val,
+                          decoration: InputDecoration(
+                              hintText: field,
+                              hintStyle: const TextStyle(
+                                  color: Colors.grey, fontSize: 12.0)),
+                          style: const TextStyle(fontFamily: "Poppins-Bold"));
+                  return Material(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            field,
+                            overflow: TextOverflow.clip,
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                          valWidget
+                        ]),
+                  ));
+                }),
+          ))
+        ]);
+  }
 }

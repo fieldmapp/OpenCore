@@ -22,13 +22,14 @@ class FileCacheOperationAdapter extends TypeAdapter<FileCacheOperation> {
       operationType: fields[4] as FileCacheOperationType,
       fileName: fields[3] as String,
       data: fields[5] as Uint8List,
+      error: (fields[6] as Map?)?.cast<String, dynamic>(),
     )..isSyncing = fields[2] as bool;
   }
 
   @override
   void write(BinaryWriter writer, FileCacheOperation obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.entryId)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class FileCacheOperationAdapter extends TypeAdapter<FileCacheOperation> {
       ..writeByte(4)
       ..write(obj.operationType)
       ..writeByte(5)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(6)
+      ..write(obj.error);
   }
 
   @override

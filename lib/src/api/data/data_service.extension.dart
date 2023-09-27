@@ -185,13 +185,14 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
         cacheObj: doc,
         box: box);
 
-    onError() async {
+    onError({Map<String, dynamic>? error}) async {
       final cacheOp = DataCacheOperation(
           parentId: doc.collectionId,
           entryId: doc.docId,
           revision: newRevision,
           data: doc.content,
-          operationType: DataCacheOperationType.update);
+          operationType: DataCacheOperationType.update,
+          error: error);
       await addCacheOp<DataCacheOperation>(
           op: cacheOp, id: doc.docId, boxId: _cacheOpKey);
     }
@@ -234,7 +235,8 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
         //   it is actually not a responsibility to draw ui for this service and this could
         //   also happen if a backgorund sync. is carried out
         // --> maybe rethrow e
-        rethrow;
+        await onError(error: {"cause": e.cause, "type": e.type});
+        // rethrow;
       }
     } on TimeoutException catch (eTime) {
       // failed lookup, bad connection
@@ -263,6 +265,8 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
     try {
       await removeFromCache<DataProxy>(
           boxId: collectionID, entryId: "$docID:$revision");
+      await removeFromCache<DataCacheOperation>(
+          boxId: _cacheOpKey, entryId: docID);
       final res = await deleteEntry(entryId: docID, collectionId: collectionID);
       return res;
     } on ConnectionException catch (e) {
@@ -280,6 +284,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       logger.e("Other exception deleting doc $docID with revision $revision");
       rethrow;
     }
+    eventManager.notifyCacheOp();
   }
 
   Future<void> syncSingleChange(
@@ -363,13 +368,14 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       required Map<String, dynamic> data}) async {
     CollectionBox<DataProxy> box = await getBox<DataProxy>(id: collectionId);
 
-    onError() async {
+    onError({Map<String, dynamic>? error}) async {
       final cacheOp = DataCacheOperation(
           parentId: collectionId,
           entryId: docId,
           revision: revision,
           data: data,
-          operationType: DataCacheOperationType.create);
+          operationType: DataCacheOperationType.create,
+          error: error);
       await addCacheOp<DataCacheOperation>(
           op: cacheOp, id: docId, boxId: _cacheOpKey);
     }
@@ -398,6 +404,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       if (eApp.type == null) {
         await onError();
       }
+      await onError(error: {"cause": eApp.cause, "type": eApp.type});
     } on TimeoutException catch (e) {
       logger.e(e);
       // creation failed bc there was no or very slow internet connection
