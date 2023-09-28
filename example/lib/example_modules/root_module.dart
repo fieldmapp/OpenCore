@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:example/login/auth.view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:open_core/core.dart';
