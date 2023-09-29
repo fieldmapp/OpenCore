@@ -96,9 +96,16 @@ mixin Cache {
       required String cachekey,
       required String cacheOperationKey,
       FileCacheManager? fileCacheManager}) async {
-    Hive.registerAdapter(proxyAdapter);
-    Hive.registerAdapter(cacheOp);
-    Hive.registerAdapter(cacheOpType);
+    if (!Hive.isAdapterRegistered(proxyAdapter.typeId)) {
+      Hive.registerAdapter(proxyAdapter);
+    }
+    if (!Hive.isAdapterRegistered(cacheOp.typeId)) {
+      Hive.registerAdapter(cacheOp);
+    }
+    if (!Hive.isAdapterRegistered(cacheOpType.typeId)) {
+      Hive.registerAdapter(cacheOpType);
+    }
+
     cacheOpKey = cacheOperationKey;
     if (fileCacheManager != null) {
       _fileCacheManager = fileCacheManager;
