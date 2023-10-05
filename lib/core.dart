@@ -30,6 +30,7 @@ export 'src/api/Cache.mixin.dart';
 
 part 'src/module.model.dart';
 part 'src/module.ui.dart';
+part 'src/moduel.service.dart';
 part 'src/connectivity.service.dart';
 part 'src/api/auth/api.auth.repository.dart';
 part 'src/api/data/api.data.repository.dart';

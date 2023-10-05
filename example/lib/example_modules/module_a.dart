@@ -39,6 +39,10 @@ class ModuleA extends AppModule {
   }
 
   @override
+  List<ModuleService<AppModule>> get moduleServices =>
+      [ModuleAService(module: this)];
+
+  @override
   ModuleAInternalLinks get internalLinks => ModuleAInternalLinks(
       root: ModuleRoutes.fromModuleRouteBase(
         routeBase: ModuleAInternalLinks.staticRoot,
@@ -75,6 +79,15 @@ class ModuleAInternalLinks extends InternalModuleLink {
     final pages = super.pages;
     pages[details] = details.pageBuilder;
     return pages;
+  }
+}
+
+// Test Service
+class ModuleAService extends ModuleService<ModuleA> {
+  ModuleAService({required super.module});
+
+  void test() {
+    print("Hello! Module A is initialized: ${module.isInit}");
   }
 }
 

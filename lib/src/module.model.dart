@@ -36,7 +36,8 @@ class ModuleRoutes extends ModuleRouteBase {
 
 class ModuleDependency<T extends Object> {
   final T? toInject;
-  ModuleDependency({this.toInject});
+  final String? dependcyName;
+  ModuleDependency({this.toInject, this.dependcyName});
 
   void inject() {
     if (toInject == null) {
@@ -45,11 +46,12 @@ class ModuleDependency<T extends Object> {
           cause: "Failed to inject dependency, because Injection Value is null",
           type: ModuleExceptionType.injection);
     }
-    GetIt.I.registerLazySingleton<T>(() => toInject!);
+    GetIt.I
+        .registerLazySingleton<T>(instanceName: dependcyName, () => toInject!);
   }
 
   bool isRegistered() {
-    return GetIt.I.isRegistered<T>();
+    return GetIt.I.isRegistered<T>(instanceName: dependcyName);
   }
 
   Type get dependencyType => T;
@@ -115,12 +117,14 @@ abstract class AppModule {
 
   bool isInit = false;
 
+  List<ModuleService> moduleServices = [];
+
   /// A GetIt Wrapper which throws a custom ex. on failure
-  T getDependency<T extends Object>() {
+  T getDependency<T extends Object>({String? dependencyName}) {
     for (final dep in dependencies) {
-      if (dep.dependencyType == T) {
+      if (dep.dependencyType == T && dep.dependcyName == dependencyName) {
         try {
-          return GetIt.I.get<T>();
+          return GetIt.I.get<T>(instanceName: dep.dependcyName);
         } on Exception catch (e) {
           final cause =
               "Failed to get Dependency of Type $T, see ${e.toString()}";
