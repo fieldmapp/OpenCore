@@ -121,24 +121,33 @@ abstract class AppModule {
 
   /// A GetIt Wrapper which throws a custom ex. on failure
   T getDependency<T extends Object>({String? dependencyName}) {
-    for (final dep in dependencies) {
-      if (dep.dependencyType == T && dep.dependcyName == dependencyName) {
-        try {
-          return GetIt.I.get<T>(instanceName: dep.dependcyName);
-        } on Exception catch (e) {
-          final cause =
-              "Failed to get Dependency of Type $T, see ${e.toString()}";
-          logger.e(cause);
-          throw ModuleException(
-              cause: "Failed to get Dependency of Type $T, see ${e.toString()}",
-              type: ModuleExceptionType.dependency);
-        }
-      }
+    // name and type
+    Iterable<ModuleDependency<Object>> res;
+    if (dependencyName != null) {
+      res = dependencies.where((element) =>
+          element.dependcyName == dependencyName &&
+          element.dependencyType == T);
+    } else {
+      // type only
+      res = dependencies.where((element) => element.dependencyType == T);
     }
-    final cause =
-        "Failed to get Dependency of Type $T, not part of the Dependency List of this Module!";
-    logger.e(cause);
-    throw ModuleException(cause: cause, type: ModuleExceptionType.dependency);
+
+    if (res.isEmpty) {
+      final cause =
+          "Failed to get Dependency of Type $T, not part of the Dependency List of this Module!";
+      logger.e(cause);
+      throw ModuleException(cause: cause, type: ModuleExceptionType.dependency);
+    }
+
+    try {
+      return GetIt.I.get<T>(instanceName: res.first.dependcyName);
+    } on Exception catch (e) {
+      final cause = "Failed to get Dependency of Type $T, see ${e.toString()}";
+      logger.e(cause);
+      throw ModuleException(
+          cause: "Failed to get Dependency of Type $T, see ${e.toString()}",
+          type: ModuleExceptionType.dependency);
+    }
   }
 
   /// Always add the Generic [T] in order for to retrive it correctly via get_it
