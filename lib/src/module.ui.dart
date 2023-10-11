@@ -60,6 +60,15 @@ mixin ModuleLandingPageUtil {
             onTap: (index) => onItemTapped(context, index, tabs, currentIndex))
         : null;
   }
+
+  String getCurrentLocation({required GoRouter router}) {
+    final RouteMatch lastMatch =
+        router.routerDelegate.currentConfiguration.last;
+    final RouteMatchList matchList = lastMatch is ImperativeRouteMatch
+        ? lastMatch.matches
+        : router.routerDelegate.currentConfiguration;
+    return matchList.uri.toString();
+  }
 }
 
 class ScaffoldWithNavBarTabItem extends BottomNavigationBarItem {
