@@ -53,6 +53,12 @@ class DataListView extends ModuleLandingPage<DataModule> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text("DataListview"),
+              ElevatedButton(
+                onPressed: () => dbApi.addNewCollectionEntry(entryName: "test"),
+                child: const Text("New Box!",
+                    style:
+                        TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
               ...collectionLinks,
               ...bucketLinks
             ],

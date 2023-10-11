@@ -36,6 +36,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
   final uuid = const Uuid();
   final _dataKey = "data-key";
   final _cacheOpKey = "cacheOperations";
+  final _dirPath = "datacollection";
 
   Future<void> initData() async {
     logger.i("INIT DATA EXENSIONS");
@@ -45,9 +46,17 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
         cacheOpType: DataCacheOperationTypeAdapter(),
         boxesToCreate: collections,
         collectionIdentifier: getSourceIdentifier(),
-        dirPath: "datacollection",
+        dirPath: _dirPath,
         cachekey: _dataKey,
         cacheOperationKey: _cacheOpKey);
+  }
+
+  Future<void> addNewCollectionEntry({required String entryName}) async {
+    await addBoxToCollection(
+        newBoxName: entryName,
+        dataCollectionDir: _dirPath,
+        collectionIdentifier: getSourceIdentifier(),
+        cachekey: _dataKey);
   }
 
   Future<DataProxy?> getData(

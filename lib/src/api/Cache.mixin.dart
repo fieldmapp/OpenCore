@@ -60,7 +60,7 @@ abstract class FileCacheManager {
 /// a network connection.
 /// All cached data is stored with AES encryption.
 mixin Cache {
-  late final BoxCollection collection;
+  late BoxCollection collection;
   late final Set<String> boxes;
   late final String cacheOpKey;
   final logger = Logger();
@@ -160,6 +160,35 @@ mixin Cache {
     return dataCollectionDir;
   }
 
+  Future<void> addBoxToCollection(
+      {required String newBoxName,
+      required String dataCollectionDir,
+      required String collectionIdentifier,
+      required String cachekey}) async {
+    final dataPath = await _initDataDir(path: dataCollectionDir);
+    final encryptionKey = await _secureStorage.read(
+        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    if (encryptionKey == null) {
+      final key = Hive.generateSecureKey();
+      await _secureStorage.write(
+          key: cachekey,
+          value: base64UrlEncode(key),
+          aOptions: _aOptions,
+          iOptions: _iOptions);
+    }
+    final key = await _secureStorage.read(
+        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    collection.close();
+    collection = await BoxCollection.open(
+      collection.name, // Name of your database
+      {...collection.boxNames, newBoxName}, // Names of your boxes
+      path: dataPath
+          .path, // Path where to store your boxes (Only used in Flutter / Dart IO)
+      key: HiveAesCipher(base64Url.decode(
+          key!)), // Key to encrypt your boxes (Only used in Flutter / Dart IO)
+    );
+  }
+
   /// Returns the requested [CollectionBox] based on the given [id]. ALWAYS
   /// pass a generic type [T] otherwise Hive can not retrieve the correct Box.
   @protected
@@ -255,6 +284,17 @@ mixin Cache {
       {required String cacheOpKey}) async {
     await Future.wait(
         [_flushCollection<T, R>(cacheOpKey: cacheOpKey), _emptyFileCache()]);
+  }
+
+  Future<void> clearSingleBox<T extends CacheOp>(
+      {required String cacheOpKey}) async {
+    try {
+      CollectionBox box = await collection.openBox<T>(cacheOpKey);
+      await box.clear();
+      await box.flush();
+    } catch (e) {
+      throw Exception("Something went wrong clearing cached box $cacheOpKey");
+    }
   }
 
   Future<void> _flushCollection<T, R extends CacheOp>(
