@@ -49,28 +49,32 @@ class DataDocViewConsumer extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("DOC")),
-      floatingActionButton: ExpandableFab(distance: 60, children: [
-        // remove doc
-        ActionButton(
-            onPressed: () async {
-              await ref.read(docProvider.notifier).removeDoc(
-                  collectionId: collectionID,
-                  docId: docID,
-                  revisionId: revision!);
-              if (context.mounted) {
-                context.pop();
-              }
-            },
-            icon: const Icon(Icons.delete_rounded)),
-        // update/save doc
-        ActionButton(
-            onPressed: () async {
-              await ref
-                  .read(docProvider.notifier)
-                  .updateDoc(data: {"Name": "Eric"});
-            },
-            icon: const Icon(Icons.update_rounded))
-      ]),
+      floatingActionButton: ExpandableFab(
+          button: FloatingActionButton.small(
+              onPressed: () {}, child: const Icon(Icons.edit)),
+          distance: 60,
+          children: [
+            // remove doc
+            ActionButton(
+                onPressed: () async {
+                  await ref.read(docProvider.notifier).removeDoc(
+                      collectionId: collectionID,
+                      docId: docID,
+                      revisionId: revision!);
+                  if (context.mounted) {
+                    context.pop();
+                  }
+                },
+                icon: const Icon(Icons.delete_rounded)),
+            // update/save doc
+            ActionButton(
+                onPressed: () async {
+                  await ref
+                      .read(docProvider.notifier)
+                      .updateDoc(data: {"Name": "Eric"});
+                },
+                icon: const Icon(Icons.update_rounded))
+          ]),
       body: doc.when(
           data: (currentDoc) {
             return DocView(

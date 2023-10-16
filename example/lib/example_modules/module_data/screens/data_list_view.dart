@@ -64,75 +64,79 @@ class DataListView extends ModuleLandingPage<DataModule> {
             ],
           ),
         ),
-        floatingActionButton: ExpandableFab(distance: 80, children: [
-          ActionButton(
-            onPressed: () {
-              showModalBottomSheet<void>(
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  isScrollControlled: true,
-                  enableDrag: true,
-                  builder: (BuildContext context) {
-                    // return getCacheOpList();
-                    return CacheOperationList<DataCacheOperation>(
-                      getOpStream: () =>
-                          dbApi.cacheOperationStream<DataCacheOperation>(),
-                      pathToDoc: module.internalLinks.doc.absolutePath,
-                      syncChanges: () => dbApi.syncLocalChanges(),
-                      listBuilder: (
-                              {required basePath,
-                              required isSyncing,
-                              required valueMap}) =>
-                          DataCacheOpListView(
-                              valueMap: valueMap,
-                              isSyncing: isSyncing,
-                              pathToDoc: basePath),
-                    );
-                  });
-            },
-            icon: const Icon(Icons.change_circle),
-          ),
-          ActionButton(
-            onPressed: () {
-              showModalBottomSheet<void>(
-                  context: context,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  isScrollControlled: true,
-                  enableDrag: true,
-                  builder: (BuildContext context) {
-                    // return getCacheOpList();
-                    return CacheOperationList<FileCacheOperation>(
-                      getOpStream: () =>
-                          mediaApi.cacheOperationStream<FileCacheOperation>(),
-                      pathToDoc: module.internalLinks.doc.absolutePath,
-                      syncChanges: () => mediaApi.syncLocalChanges(),
-                      listBuilder: (
-                              {required basePath,
-                              required isSyncing,
-                              required valueMap}) =>
-                          FileCacheOpListview(
-                              valueMap: valueMap,
-                              isSyncing: isSyncing,
-                              pathToDoc:
-                                  module.internalLinks.bucket.absolutePath),
-                    );
-                  });
-            },
-            icon: const Icon(Icons.perm_media_rounded),
-          ),
-          ActionButton(
-            icon: const Icon(Icons.clear_all),
-            onPressed: () async {
-              await DocService().resetDataCache();
-              await MediaService().resetMediaCache();
-            },
-          )
-        ]));
+        floatingActionButton: ExpandableFab(
+            button: FloatingActionButton.small(
+                onPressed: () {}, child: const Icon(Icons.edit)),
+            distance: 80,
+            children: [
+              ActionButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      isScrollControlled: true,
+                      enableDrag: true,
+                      builder: (BuildContext context) {
+                        // return getCacheOpList();
+                        return CacheOperationList<DataCacheOperation>(
+                          getOpStream: () =>
+                              dbApi.cacheOperationStream<DataCacheOperation>(),
+                          pathToDoc: module.internalLinks.doc.absolutePath,
+                          syncChanges: () => dbApi.syncLocalChanges(),
+                          listBuilder: (
+                                  {required basePath,
+                                  required isSyncing,
+                                  required valueMap}) =>
+                              DataCacheOpListView(
+                                  valueMap: valueMap,
+                                  isSyncing: isSyncing,
+                                  pathToDoc: basePath),
+                        );
+                      });
+                },
+                icon: const Icon(Icons.change_circle),
+              ),
+              ActionButton(
+                onPressed: () {
+                  showModalBottomSheet<void>(
+                      context: context,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      isScrollControlled: true,
+                      enableDrag: true,
+                      builder: (BuildContext context) {
+                        // return getCacheOpList();
+                        return CacheOperationList<FileCacheOperation>(
+                          getOpStream: () => mediaApi
+                              .cacheOperationStream<FileCacheOperation>(),
+                          pathToDoc: module.internalLinks.doc.absolutePath,
+                          syncChanges: () => mediaApi.syncLocalChanges(),
+                          listBuilder: (
+                                  {required basePath,
+                                  required isSyncing,
+                                  required valueMap}) =>
+                              FileCacheOpListview(
+                                  valueMap: valueMap,
+                                  isSyncing: isSyncing,
+                                  pathToDoc:
+                                      module.internalLinks.bucket.absolutePath),
+                        );
+                      });
+                },
+                icon: const Icon(Icons.perm_media_rounded),
+              ),
+              ActionButton(
+                icon: const Icon(Icons.clear_all),
+                onPressed: () async {
+                  await DocService().resetDataCache();
+                  await MediaService().resetMediaCache();
+                },
+              )
+            ]));
   }
 }
