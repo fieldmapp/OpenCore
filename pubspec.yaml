@@ -1,6 +1,6 @@
 name: open_core
 description: DLR Data App OpenCore implementation
-version: 0.1.5
+version: 0.1.7
 homepage:
 
 environment:
@@ -22,7 +22,7 @@ dependencies:
   uuid: ^3.0.6
 
   connectivity_plus: ^3.0.2
-  logger: ^1.3.0
+  logger: ^2.0.2+1
   analyzer: ^5.10.0
   meta: ^1.8.0
   flutter_cache_manager: ^3.3.0
