@@ -172,7 +172,7 @@ abstract class AppModule {
         final err = ModuleException(
             cause: "Dependency ${dep.dependencyType} for $moduleName not met!",
             type: ModuleExceptionType.dependency);
-        _logger.e(err.cause, [err]);
+        _logger.e(err.cause, stackTrace: StackTrace.current);
         throw err;
       }
     }
@@ -210,7 +210,7 @@ abstract class AppModule {
     } on Exception catch (eRoute) {
       final cause =
           "Something went wrong creating the routes for Module: $moduleName, see $eRoute";
-      logger.e(cause, eRoute);
+      logger.e(cause, stackTrace: StackTrace.current);
       throw ModuleException(
           cause: cause, type: ModuleExceptionType.initialization);
     }
@@ -312,7 +312,7 @@ abstract class RootModule extends AppModule {
     } on Exception catch (eRootMod) {
       final cause =
           "Something went wrong creating the routes for RootModule: $moduleName, see $eRootMod";
-      logger.e(cause, eRootMod);
+      logger.e(cause, stackTrace: StackTrace.current);
       throw ModuleException(
           cause: cause, type: ModuleExceptionType.initialization);
     }
