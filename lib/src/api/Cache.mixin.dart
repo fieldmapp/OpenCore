@@ -286,8 +286,7 @@ mixin Cache {
         [_flushCollection<T, R>(cacheOpKey: cacheOpKey), _emptyFileCache()]);
   }
 
-  Future<void> clearSingleBox<T extends CacheOp>(
-      {required String cacheOpKey}) async {
+  Future<void> clearSingleBox<T>({required String boxId}) async {
     try {
       CollectionBox box = await collection.openBox<T>(cacheOpKey);
       await box.clear();
