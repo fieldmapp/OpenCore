@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //final exampleModule = await setupMultiModuleEx();
+  // final exampleModule = await setupMultiModuleEx();
   final exampleModule = await setupDataModule();
   // final exampleModule = await setupSimpleModule();
   runApp(ProviderScope(

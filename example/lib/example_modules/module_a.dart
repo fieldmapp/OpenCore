@@ -122,13 +122,15 @@ class AnotherScreen extends ModuleLandingPage<ModuleA> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+    final String location = getCurrentLocation(router: router);
     final tabs = GetIt.I.get<List<ScaffoldWithNavBarTabItem>>();
     return Scaffold(
       appBar: AppBar(title: const Text('Another Screen')),
       bottomNavigationBar: hasBottomBar
           ? super.getBottomNavBar(
               // computes the current index from the current location
-              locationToTabIndex(GoRouter.of(context).location, tabs),
+              locationToTabIndex(location, tabs),
               tabs,
               context)
           : null,

@@ -81,4 +81,8 @@ class DocService {
       () async {},
     );
   }
+
+  Future<void> resetCollection() async {
+    await _apiService.clearSingleBox<DataProxy>(boxId: "1");
+  }
 }
