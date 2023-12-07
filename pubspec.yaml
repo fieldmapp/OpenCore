@@ -1,6 +1,6 @@
 name: open_core
 description: DLR Data App OpenCore implementation
-version: 0.1.7
+version: 0.1.8
 homepage:
 
 environment:
