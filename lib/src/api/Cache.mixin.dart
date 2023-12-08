@@ -288,7 +288,7 @@ mixin Cache {
 
   Future<void> clearSingleBox<T>({required String boxId}) async {
     try {
-      CollectionBox box = await collection.openBox<T>(cacheOpKey);
+      CollectionBox box = await collection.openBox<T>(boxId);
       await box.clear();
       await box.flush();
     } catch (e) {
