@@ -2,9 +2,16 @@
 
 Core Package that implements Module-Interfaces and the corresponding dependency injection logic, as well as Data-layer logic to connect and cache different datasources to the application.
 
+**Open Core Building Blocks**
+
+![Building-Blocks](screenshots/building_blocks.png)
+
 ## Architecture
 
 ### Data layer
+
+The DataLayer implementation addresses the issue of offering a generic interface for **API connections** and provides a **caching interface** to support an offline-first approach.
+
 
 Data layer implementation according to this [App-Architecture](https://codewithandrea.com/articles/flutter-app-architecture-riverpod-introduction/) which is a customized extension off [clean architecture by uncle bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
 
@@ -15,8 +22,8 @@ Data layer implementation according to this [App-Architecture](https://codewitha
     - Interface and mixin implementation for the universial auth-flow of the application. 
     - optional auth-credentials are cached using AES-encrypted device storage
 - `api/data`
-    -  Interface and mixin implementation for the universial Database-object handling. 
-    - handels caching of Database-object, stored on device using AES-Encryption
+    -  Interface and mixin implementation for the universial DTO-object handling. 
+    - handels caching of DTO-object, stored on device using AES-Encryption
 - `api/media`
     -  Interface and mixin implementation for the universial File/Media-Upload handling. 
     - handels caching, data stored on device using AES-Encryption
@@ -26,11 +33,22 @@ Data layer implementation according to this [App-Architecture](https://codewitha
     - mixed provider implementations are possible (i.e. for CQRS)
     - provider implementation can also be done outside of this package
 
-### Caching
+#### Caching
 
 **cache-Aside** 
 
+- *todo*
+
 https://codeahoy.com/2017/08/11/caching-strategies-and-how-to-choose-the-right-one/
+
+#### Modularization
+
+- *todo*
+
+
+#### Routing
+
+- *todo*
 
 ## Code Generation
 
