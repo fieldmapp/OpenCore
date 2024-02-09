@@ -6,6 +6,11 @@ Core Package that implements Module-Interfaces and the corresponding dependency 
 
 ![Building-Blocks](screenshots/building_blocks.png)
 
+## Code Generation
+
+- generate code with `flutter packages pub run build_runner build --delete-conflicting-outputs`
+- this is needed to create the Hive-Adapters for the cachinglayer, currently used by `api/data`, `api/media` and `api/auth`
+
 ## Architecture
 
 ### Data layer
@@ -13,7 +18,7 @@ Core Package that implements Module-Interfaces and the corresponding dependency 
 The DataLayer implementation addresses the issue of offering a generic interface for **API connections** and provides a **caching interface** to support an offline-first approach.
 
 
-Data layer implementation according to this [App-Architecture](https://codewithandrea.com/articles/flutter-app-architecture-riverpod-introduction/) which is a customized extension off [clean architecture by uncle bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html). 
+Data layer implementation according to this [App-Architecture](https://codewithandrea.com/articles/flutter-app-architecture-riverpod-introduction/) which is a customized extension off [clean architecture by uncle bob](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html), inspired by the [Riverpod-Architecture](https://codewithandrea.com/articles/flutter-project-structure/) by Andre Bizzotto.
 
 ![Data layer sketch](screenshots/data_layer.png)
 
@@ -50,8 +55,23 @@ https://codeahoy.com/2017/08/11/caching-strategies-and-how-to-choose-the-right-o
 
 - *todo*
 
-## Code Generation
+## Examples
 
-- generate code with `flutter packages pub run build_runner build --delete-conflicting-outputs`
-- this is needed to create the Hive-Adapters for the cachinglayer, currently used by `api/data`, `api/media` and `api/auth`
+You can find in depth examples in `/examples`.
+
+*Creating a Module*
+
+- *todo*
+
+*Creating Module routes*
+
+- *todo*
+
+*Creating a Repository/Api-Connection*
+
+- *todo*
+
+*Using the Cache*
+
+- *todo*
 
