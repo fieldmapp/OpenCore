@@ -9,7 +9,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-class CacheOp {
+class CacheOp extends HiveObject {
   final String entryId;
   final String parentId;
   bool isSyncing;
@@ -224,13 +224,22 @@ mixin Cache {
   /// as optional parameter.
   /// ALWAYS pass a generic type [T] otherwise Hive can not retrieve the correct Box.
   @protected
-  Future<void> removeFromCache<T>(
+  Future<void> removeFromCache<T extends HiveObject>(
       {required String boxId,
       required String entryId,
       CollectionBox<T>? box}) async {
     try {
       box ??= await getBox<T>(id: boxId);
-      await box.delete(entryId);
+      final res = await box.get(entryId);
+      if (res != null) {
+        await res.delete();
+        return;
+      }
+
+      throw Exception(
+          "Entry from box $boxId with id $entryId can not be deleted because it was not found!");
+
+      // await box.delete(entryId);
     } on Exception catch (e) {
       logger.e(e);
       logger.e("Could not remove $entryId from Box $boxId");
