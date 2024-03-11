@@ -24,13 +24,18 @@ class FileCacheOperation extends HiveObject implements CacheOp {
   final FileCacheOperationType operationType;
   @HiveField(5)
   final Uint8List data;
+  // Optional Error Map, if i.e. an error occurs when this cache operation is used
+  // for syncing a change
+  @HiveField(6)
+  final Map<String, dynamic>? error;
 
   FileCacheOperation(
       {required this.entryId,
       required this.parentId,
       required this.operationType,
       required this.fileName,
-      required this.data});
+      required this.data,
+      this.error});
 }
 
 @HiveType(typeId: 22)

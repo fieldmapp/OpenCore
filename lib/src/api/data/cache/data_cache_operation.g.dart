@@ -22,13 +22,14 @@ class DataCacheOperationAdapter extends TypeAdapter<DataCacheOperation> {
       operationType: fields[4] as DataCacheOperationType,
       revision: fields[3] as String,
       data: (fields[5] as Map).cast<String, dynamic>(),
+      error: (fields[6] as Map?)?.cast<String, dynamic>(),
     )..isSyncing = fields[2] as bool;
   }
 
   @override
   void write(BinaryWriter writer, DataCacheOperation obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.entryId)
       ..writeByte(1)
@@ -40,7 +41,9 @@ class DataCacheOperationAdapter extends TypeAdapter<DataCacheOperation> {
       ..writeByte(4)
       ..write(obj.operationType)
       ..writeByte(5)
-      ..write(obj.data);
+      ..write(obj.data)
+      ..writeByte(6)
+      ..write(obj.error);
   }
 
   @override

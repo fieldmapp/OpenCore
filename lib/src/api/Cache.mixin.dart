@@ -9,7 +9,7 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-class CacheOp {
+class CacheOp extends HiveObject {
   final String entryId;
   final String parentId;
   bool isSyncing;
@@ -17,11 +17,22 @@ class CacheOp {
   CacheOp(this.entryId, this.parentId, this.isSyncing);
 }
 
+class CacheEventManager<T extends CacheOp> {
+  final StreamController<void> _cacheOpEventController =
+      StreamController<void>.broadcast();
+
+  // External methods to trigger cache events
+  void notifyCacheOp() {
+    _cacheOpEventController.add(null);
+  }
+
+  Stream<void> get cacheOpEventStream => _cacheOpEventController.stream;
+}
+
 abstract class CacheUtils {
   Future<void> emptyCache(AsyncCallback? onEmptyCache);
   Future<bool> entryNeedsSync({required String id});
-  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>(
-      {required Duration interval});
+  Stream<Map<String, T>> cacheOperationStream<T extends CacheOp>();
 }
 
 abstract class FileCacheManager {
@@ -49,7 +60,7 @@ abstract class FileCacheManager {
 /// a network connection.
 /// All cached data is stored with AES encryption.
 mixin Cache {
-  late final BoxCollection collection;
+  late BoxCollection collection;
   late final Set<String> boxes;
   late final String cacheOpKey;
   final logger = Logger();
@@ -58,6 +69,8 @@ mixin Cache {
   final _aOptions = const AndroidOptions(encryptedSharedPreferences: true);
   final _iOptions =
       const IOSOptions(accessibility: KeychainAccessibility.first_unlock);
+
+  final CacheEventManager<CacheOp> eventManager = CacheEventManager<CacheOp>();
 
   /// Initializes the Cache Mixin and registers all provided [TypeAdapter]s.
   ///
@@ -83,9 +96,16 @@ mixin Cache {
       required String cachekey,
       required String cacheOperationKey,
       FileCacheManager? fileCacheManager}) async {
-    Hive.registerAdapter(proxyAdapter);
-    Hive.registerAdapter(cacheOp);
-    Hive.registerAdapter(cacheOpType);
+    if (!Hive.isAdapterRegistered(proxyAdapter.typeId)) {
+      Hive.registerAdapter(proxyAdapter);
+    }
+    if (!Hive.isAdapterRegistered(cacheOp.typeId)) {
+      Hive.registerAdapter(cacheOp);
+    }
+    if (!Hive.isAdapterRegistered(cacheOpType.typeId)) {
+      Hive.registerAdapter(cacheOpType);
+    }
+
     cacheOpKey = cacheOperationKey;
     if (fileCacheManager != null) {
       _fileCacheManager = fileCacheManager;
@@ -140,6 +160,35 @@ mixin Cache {
     return dataCollectionDir;
   }
 
+  Future<void> addBoxToCollection(
+      {required String newBoxName,
+      required String dataCollectionDir,
+      required String collectionIdentifier,
+      required String cachekey}) async {
+    final dataPath = await _initDataDir(path: dataCollectionDir);
+    final encryptionKey = await _secureStorage.read(
+        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    if (encryptionKey == null) {
+      final key = Hive.generateSecureKey();
+      await _secureStorage.write(
+          key: cachekey,
+          value: base64UrlEncode(key),
+          aOptions: _aOptions,
+          iOptions: _iOptions);
+    }
+    final key = await _secureStorage.read(
+        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    collection.close();
+    collection = await BoxCollection.open(
+      collection.name, // Name of your database
+      {...collection.boxNames, newBoxName}, // Names of your boxes
+      path: dataPath
+          .path, // Path where to store your boxes (Only used in Flutter / Dart IO)
+      key: HiveAesCipher(base64Url.decode(
+          key!)), // Key to encrypt your boxes (Only used in Flutter / Dart IO)
+    );
+  }
+
   /// Returns the requested [CollectionBox] based on the given [id]. ALWAYS
   /// pass a generic type [T] otherwise Hive can not retrieve the correct Box.
   @protected
@@ -175,13 +224,22 @@ mixin Cache {
   /// as optional parameter.
   /// ALWAYS pass a generic type [T] otherwise Hive can not retrieve the correct Box.
   @protected
-  Future<void> removeFromCache<T>(
+  Future<void> removeFromCache<T extends HiveObject>(
       {required String boxId,
       required String entryId,
       CollectionBox<T>? box}) async {
     try {
       box ??= await getBox<T>(id: boxId);
-      await box.delete(entryId);
+      final res = await box.get(entryId);
+      if (res != null) {
+        await res.delete();
+        return;
+      }
+
+      throw Exception(
+          "Entry from box $boxId with id $entryId can not be deleted because it was not found!");
+
+      // await box.delete(entryId);
     } on Exception catch (e) {
       logger.e(e);
       logger.e("Could not remove $entryId from Box $boxId");
@@ -195,6 +253,7 @@ mixin Cache {
       {required T op, required String id, required String boxId}) async {
     try {
       await addToCache<T>(boxId: boxId, entryId: id, cacheObj: op);
+      eventManager.notifyCacheOp();
     } on Exception catch (e) {
       logger.e(e);
       rethrow;
@@ -205,8 +264,10 @@ mixin Cache {
   @protected
   Future<void> removeCacheOp<T extends CacheOp>(
       {required id, required boxId}) async {
+    logger.d("Remove CacheOP $id");
     if (await needsSync<T>(id: id, cacheOpKey: boxId)) {
       await removeFromCache<T>(boxId: boxId, entryId: id);
+      eventManager.notifyCacheOp();
     }
   }
 
@@ -234,6 +295,16 @@ mixin Cache {
         [_flushCollection<T, R>(cacheOpKey: cacheOpKey), _emptyFileCache()]);
   }
 
+  Future<void> clearSingleBox<T>({required String boxId}) async {
+    try {
+      CollectionBox box = await collection.openBox<T>(boxId);
+      await box.clear();
+      await box.flush();
+    } catch (e) {
+      throw Exception("Something went wrong clearing cached box $cacheOpKey");
+    }
+  }
+
   Future<void> _flushCollection<T, R extends CacheOp>(
       {required String cacheOpKey}) async {
     for (final boxId in boxes) {
@@ -246,6 +317,7 @@ mixin Cache {
       await box.clear();
       await box.flush();
     }
+    eventManager.notifyCacheOp();
     logger.i("CACHE COLLECTION FLUSHED!");
   }
 
@@ -263,35 +335,25 @@ mixin Cache {
 
   /// Returns a stream of open CacheOperations, for this CacheMixin.
   ///
-  /// You can configure the refresh rate by passing a Duration as [interval].
   @protected
   Stream<Map<String, T>> getCacheOperationStream<T extends CacheOp>(
-      {required Duration interval, required String cacheOpKey}) {
+      {required String cacheOpKey}) {
     late StreamController<Map<String, T>> controller;
-    Timer? timer;
     Map<String, T> cacheMap = {};
 
-    Future<void> tick(_) async {
-      logger.i(cacheMap.entries.length);
+    StreamSubscription? eventSub;
+    controller = StreamController<Map<String, T>>(onListen: () async {
+      // Attach event listener
       cacheMap = await getAllCacheOperations<T>(boxId: cacheOpKey);
       controller.add(cacheMap);
-    }
-
-    void startTimer() {
-      timer = Timer.periodic(interval, tick);
-    }
-
-    void stopTimer() {
-      timer?.cancel();
-      timer = null;
-    }
-
-    controller = StreamController<Map<String, T>>(
-        onListen: startTimer,
-        onPause: stopTimer,
-        onResume: startTimer,
-        onCancel: stopTimer);
-
+      eventSub = eventManager.cacheOpEventStream.listen((_) async {
+        cacheMap = await getAllCacheOperations<T>(boxId: cacheOpKey);
+        controller.add(cacheMap);
+      });
+    }, onCancel: () {
+      eventSub!.cancel();
+      // Handle cleanup if needed
+    });
     return controller.stream;
   }
 
@@ -312,6 +374,16 @@ mixin Cache {
   Future<void> setFileToCache({required String key, required File file}) async {
     if (_fileCacheManager != null) {
       await _fileCacheManager!.setFile(key: key, file: file);
+      return;
+    }
+    logger.e("No FileCacheManager set for this CacheMixin!");
+  }
+
+  @protected
+  Future<void> removeFileFromCache({required String key}) async {
+    if (_fileCacheManager != null) {
+      await _fileCacheManager!.removeFile(key: key);
+      logger.i("File with key $key removed from cache!");
       return;
     }
     logger.e("No FileCacheManager set for this CacheMixin!");

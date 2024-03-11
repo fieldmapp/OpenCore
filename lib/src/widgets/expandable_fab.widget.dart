@@ -7,11 +7,13 @@ class ExpandableFab extends StatefulWidget {
     this.initialOpen,
     required this.distance,
     required this.children,
+    required this.button,
   });
 
   final bool? initialOpen;
   final double distance;
   final List<Widget> children;
+  final FloatingActionButton button;
 
   @override
   State<ExpandableFab> createState() => _ExpandableFabState();
@@ -65,7 +67,7 @@ class _ExpandableFabState extends State<ExpandableFab>
         children: [
           _buildTapToCloseFab(),
           ..._buildExpandingActionButtons(),
-          _buildTapToOpenFab(),
+          _buildTapToOpenFab(actionButton: widget.button),
         ],
       ),
     );
@@ -76,21 +78,23 @@ class _ExpandableFabState extends State<ExpandableFab>
       width: 56.0,
       height: 56.0,
       child: Center(
-        child: Material(
-          shape: const CircleBorder(),
-          clipBehavior: Clip.antiAlias,
-          elevation: 4.0,
-          child: InkWell(
-            onTap: _toggle,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.close,
-                color: Theme.of(context).primaryColor,
+        child: Opacity(
+            opacity: _open ? 1 : 0,
+            child: Material(
+              shape: const CircleBorder(),
+              clipBehavior: Clip.antiAlias,
+              elevation: 4.0,
+              child: InkWell(
+                onTap: _toggle,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.close,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
+            )),
       ),
     );
   }
@@ -114,7 +118,7 @@ class _ExpandableFabState extends State<ExpandableFab>
     return children;
   }
 
-  Widget _buildTapToOpenFab() {
+  Widget _buildTapToOpenFab({required FloatingActionButton actionButton}) {
     return IgnorePointer(
       ignoring: _open,
       child: AnimatedContainer(
@@ -127,14 +131,14 @@ class _ExpandableFabState extends State<ExpandableFab>
         duration: const Duration(milliseconds: 250),
         curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
         child: AnimatedOpacity(
-          opacity: _open ? 0.0 : 1.0,
-          curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
-          duration: const Duration(milliseconds: 250),
-          child: FloatingActionButton(
-            onPressed: _toggle,
-            child: const Icon(Icons.create),
-          ),
-        ),
+            opacity: _open ? 0.0 : 1.0,
+            curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
+            duration: const Duration(milliseconds: 250),
+            child: FloatingActionButton.small(
+              backgroundColor: actionButton.backgroundColor,
+              onPressed: _toggle,
+              child: actionButton.child,
+            )),
       ),
     );
   }

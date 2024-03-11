@@ -1,8 +1,4 @@
-import 'dart:io';
-import 'package:open_core/core.dart';
-import 'package:open_core/src/api/media/MediaService.extension.dart';
-import 'package:logger/logger.dart';
-import 'package:meta/meta.dart';
+part of core;
 
 abstract class ApiMedia {
   late final Set<String> buckets;

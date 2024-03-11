@@ -1,7 +1,4 @@
-import 'package:open_core/core.dart';
-import 'package:open_core/src/api/data/data_service.extension.dart';
-import 'package:logger/logger.dart';
-import 'package:meta/meta.dart';
+part of core;
 
 abstract class ApiData {
   late final Set<String> collections;

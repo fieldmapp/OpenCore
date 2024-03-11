@@ -1,4 +1,3 @@
-import 'package:appwrite/models.dart';
 import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
 
@@ -27,25 +26,16 @@ class DataProxy extends HiveObject {
       required this.revision,
       required this.content});
 
-  factory DataProxy.fromDoc(Document doc) {
+  factory DataProxy.fromCallback({required DataProxy Function() callBack}) {
     final Logger logger = Logger();
     try {
-      final res = DataProxy(
-          databaseId: doc.$databaseId,
-          collectionId: doc.$collectionId,
-          docId: doc.$id,
-          revision: doc.data["revision"],
-          content: doc.data);
+      final res = callBack();
       return res;
     } on Exception catch (e) {
-      logger.e("Something went wrong creating DataProxy from Doc $doc");
+      logger.e("Something went wrong creating DataProxy from callBack");
       logger.e(e);
       rethrow;
     }
-  }
-
-  Document getDoc() {
-    return Document.fromMap(content);
   }
 
   @override

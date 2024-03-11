@@ -1,9 +1,4 @@
-import 'package:open_core/core.dart';
-import 'package:open_core/src/api/auth/user_adapater.dart';
-import 'package:appwrite/appwrite.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
+part of core;
 
 class AppwriteAuthRepository extends ApiAuthRepository {
   final Account account;

@@ -1,4 +1,4 @@
-import 'package:appwrite/appwrite.dart';
+part of core;
 
 class AppwriteBase {
   late final Client _client;

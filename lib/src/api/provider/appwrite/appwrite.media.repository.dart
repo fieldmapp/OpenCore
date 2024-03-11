@@ -1,9 +1,4 @@
-import 'dart:io';
-import 'package:open_core/core.dart';
-import 'package:appwrite/appwrite.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
+part of core;
 
 class AppwriteMediaRepository extends ApiMediaRepository {
   final Storage storage;
