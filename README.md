@@ -2,6 +2,10 @@
 
 OpenCore package can be the base of an application or package, offering a streamlined integration of Module Interfaces and a powerful dependency injection system (created with [get_it](https://pub.dev/packages/get_it)). It simplifies module management and enhances interoperability. Additionally, it includes an efficient Data-layer Logic for connecting and caching multiple data sources, optimizing data access and application performance. Designed for ease of use and scalability, a tool for developers looking to enhance their application's architecture and data handling capabilities.
 
+**Citation**
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10803754.svg)](https://doi.org/10.5281/zenodo.10803754)
+
 **Open Core Building Blocks**
 
 ![Building-Blocks](screenshots/building_blocks.png)
