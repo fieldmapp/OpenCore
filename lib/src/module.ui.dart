@@ -51,16 +51,6 @@ mixin ModuleLandingPageUtil {
     }
   }
 
-  BottomNavigationBar? getBottomNavBar(int currentIndex,
-      List<ScaffoldWithNavBarTabItem> tabs, BuildContext context) {
-    return tabs.length > 1
-        ? BottomNavigationBar(
-            currentIndex: currentIndex,
-            items: tabs,
-            onTap: (index) => onItemTapped(context, index, tabs, currentIndex))
-        : null;
-  }
-
   String getCurrentLocation({required GoRouter router}) {
     final RouteMatch lastMatch =
         router.routerDelegate.currentConfiguration.last;
@@ -73,8 +63,7 @@ mixin ModuleLandingPageUtil {
 
 class ScaffoldWithNavBarTabItem extends BottomNavigationBarItem {
   const ScaffoldWithNavBarTabItem(
-      {required this.initialLocation, required Widget icon, String? label})
-      : super(icon: icon, label: label);
+      {required this.initialLocation, required super.icon, super.label});
 
   /// The initial location/path
   final String initialLocation;

@@ -57,15 +57,17 @@ class BDetailScreen extends ModuleLandingPage<ModuleB> {
     final tabs = GetIt.I.get<List<ScaffoldWithNavBarTabItem>>();
     final router = GoRouter.of(context);
     final String location = getCurrentLocation(router: router);
-
+    // computes the current index from the current location
+    final currentIndex = locationToTabIndex(location, tabs);
     return Scaffold(
       appBar: AppBar(title: const Text('Screen Module B')),
       bottomNavigationBar: hasBottomBar
-          ? super.getBottomNavBar(
-              // computes the current index from the current location
-              locationToTabIndex(location, tabs),
-              tabs,
-              context)
+          ? BottomNavigationBar(
+              currentIndex: currentIndex,
+              items: tabs,
+              onTap: (index) =>
+                  onItemTapped(context, index, tabs, currentIndex),
+            )
           : null,
       body: Center(
         child: Column(

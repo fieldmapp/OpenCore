@@ -125,14 +125,18 @@ class AnotherScreen extends ModuleLandingPage<ModuleA> {
     final router = GoRouter.of(context);
     final String location = getCurrentLocation(router: router);
     final tabs = GetIt.I.get<List<ScaffoldWithNavBarTabItem>>();
+    // computes the current index from the current location
+    final currentIndex = locationToTabIndex(location, tabs);
     return Scaffold(
       appBar: AppBar(title: const Text('Another Screen')),
       bottomNavigationBar: hasBottomBar
-          ? super.getBottomNavBar(
-              // computes the current index from the current location
-              locationToTabIndex(location, tabs),
-              tabs,
-              context)
+          ? BottomNavigationBar(
+              backgroundColor: Colors.amber,
+              currentIndex: currentIndex,
+              items: tabs,
+              onTap: (index) =>
+                  onItemTapped(context, index, tabs, currentIndex),
+            )
           : null,
       body: Center(
         child: Column(
