@@ -94,7 +94,7 @@ class CacheOperationList<T extends CacheOp> extends StatelessWidget {
             child: Center(
               child: InfoContainer(
                 title: "No local changes",
-                icon: Icons.air_rounded,
+                icon: Icon(Icons.air_rounded),
                 subTitle: "You can lean back now.",
               ),
             ),
@@ -168,7 +168,7 @@ class DataCacheOpListView extends StatelessWidget {
                         ? InfoContainer(
                             title: "Error",
                             subTitle: "${entry.value.error!["cause"]}",
-                            icon: Icons.error)
+                            icon: const Icon(Icons.error))
                         : Container(),
                     ...entry.value.data.entries.map((e) {
                       return Row(
@@ -259,7 +259,7 @@ class FileCacheOpListview extends StatelessWidget {
                         ? InfoContainer(
                             title: "Error",
                             subTitle: "${entry.value.error!["cause"]}",
-                            icon: Icons.error)
+                            icon: const Icon(Icons.error))
                         : Container(),
                     isSyncing ? const LinearProgressIndicator() : Container(),
                     Row(

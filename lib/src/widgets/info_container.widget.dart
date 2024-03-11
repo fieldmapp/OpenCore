@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 class InfoContainer extends StatelessWidget {
   final String title;
   final String subTitle;
-  final IconData icon;
+  final TextStyle? titleStyle;
+  final TextStyle? subTitleStyle;
+  final Icon icon;
 
   const InfoContainer(
       {super.key,
       required this.title,
       required this.subTitle,
-      required this.icon});
+      required this.icon,
+      this.titleStyle,
+      this.subTitleStyle});
 
   @override
   Widget build(BuildContext context) {
@@ -23,16 +27,18 @@ class InfoContainer extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon),
+            icon,
             Text(
               title,
-              style: TextStyle(
-                  color: Colors.grey[800], fontWeight: FontWeight.w600),
+              style: titleStyle ??
+                  TextStyle(
+                      color: Colors.grey[800], fontWeight: FontWeight.w600),
             ),
             Text(
               subTitle,
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.w300),
+              style: subTitleStyle ??
+                  const TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.w300),
             )
           ],
         ),

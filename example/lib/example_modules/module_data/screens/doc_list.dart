@@ -121,7 +121,7 @@ class DocListConsumer extends ConsumerWidget {
           error: (error, stackTrace) {
             return Center(
                 child: InfoContainer(
-                    icon: Icons.error,
+                    icon: const Icon(Icons.error),
                     title: "Something went wrong",
                     subTitle: error.toString()));
           },

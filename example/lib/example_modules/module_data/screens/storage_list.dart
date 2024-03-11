@@ -96,7 +96,7 @@ class StorageListConsumer extends ConsumerWidget {
                                               title: "Error",
                                               subTitle:
                                                   "Something went wrong fetching your file.",
-                                              icon: Icons.error_rounded);
+                                              icon: Icon(Icons.error_rounded));
                                     }
 
                                     return const Center(
@@ -184,7 +184,7 @@ class StorageListConsumer extends ConsumerWidget {
           error: (error, stackTrace) {
             return Center(
                 child: InfoContainer(
-                    icon: Icons.error,
+                    icon: const Icon(Icons.error),
                     title: "Something went wrong",
                     subTitle: error.toString()));
           },

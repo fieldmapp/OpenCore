@@ -85,7 +85,7 @@ class DataDocViewConsumer extends ConsumerWidget {
                 child: Column(
               children: [
                 InfoContainer(
-                    icon: Icons.error,
+                    icon: const Icon(Icons.error),
                     title: "Something went wrong",
                     subTitle: error.toString()),
                 TextButton(

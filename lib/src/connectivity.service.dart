@@ -5,8 +5,15 @@ part of core;
 
 class ConnectivityService {
   final List<String> connectedServices;
+  final TextStyle? textStyle;
+  final Color? offlineColor;
+  final Color? onlineColor;
   late final Connectivity _connectivity;
-  ConnectivityService({required this.connectedServices}) {
+  ConnectivityService(
+      {required this.connectedServices,
+      this.textStyle,
+      this.offlineColor,
+      this.onlineColor}) {
     _connectivity = Connectivity();
   }
 
@@ -54,7 +61,7 @@ class ConnectivityService {
 
   SnackBar getSnackbarForEvent(ConnectivityResult event) {
     var content = "";
-    var color = Colors.red;
+    var color = offlineColor ?? Colors.red;
     Duration duration = const Duration(seconds: 3);
     switch (event) {
       case ConnectivityResult.wifi:
@@ -62,11 +69,11 @@ class ConnectivityService {
       case ConnectivityResult.ethernet:
       case ConnectivityResult.vpn:
         content = "Online";
-        color = Colors.green;
+        color = onlineColor ?? Colors.green;
         break;
       default:
         content = "offline";
-        color = Colors.red;
+        color = offlineColor ?? Colors.red;
         duration = const Duration(seconds: 4);
         break;
     }
@@ -74,7 +81,8 @@ class ConnectivityService {
       content: Text(
         content,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        style: textStyle ??
+            const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
       ),
       elevation: 0.0,
       backgroundColor: color,
@@ -89,17 +97,17 @@ class ConnectivityService {
   }
 
   SnackBar getOfflineIndicator() {
-    return const SnackBar(
-      content: Text(
+    return SnackBar(
+      content: const Text(
         "",
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 1, fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold),
       ),
       elevation: 0.0,
-      backgroundColor: Colors.red,
-      padding: EdgeInsets.all(2),
+      backgroundColor: offlineColor ?? Colors.red,
+      padding: const EdgeInsets.all(2),
       behavior: SnackBarBehavior.fixed,
-      duration: Duration(days: 3),
+      duration: const Duration(days: 3),
     );
   }
 
