@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
+import 'package:open_core/core.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -126,8 +127,15 @@ mixin Cache {
       required String cachekey,
       required String cacheOpKey}) async {
     // if key not exists return null
-    final encryptionKey = await _secureStorage.read(
-        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    String? encryptionKey;
+    try {
+      encryptionKey = await _secureStorage.read(
+          key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    } on Exception catch (e) {
+      logger.e(
+        "Error retrieving encryption key $e",
+      );
+    }
     if (encryptionKey == null) {
       final key = Hive.generateSecureKey();
       await _secureStorage.write(
@@ -166,8 +174,13 @@ mixin Cache {
       required String collectionIdentifier,
       required String cachekey}) async {
     final dataPath = await _initDataDir(path: dataCollectionDir);
-    final encryptionKey = await _secureStorage.read(
-        key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    String? encryptionKey;
+    try {
+      encryptionKey = await _secureStorage.read(
+          key: cachekey, aOptions: _aOptions, iOptions: _iOptions);
+    } on Exception catch (e) {
+      logger.e("Error retrieving encryption key $e");
+    }
     if (encryptionKey == null) {
       final key = Hive.generateSecureKey();
       await _secureStorage.write(
@@ -235,14 +248,39 @@ mixin Cache {
         await res.delete();
         return;
       }
-
+      // TODO: does it make sense to throw this ex here, since we cant really recover
+      // from that anyways, thats why it is catched right away
       throw Exception(
           "Entry from box $boxId with id $entryId can not be deleted because it was not found!");
-
-      // await box.delete(entryId);
     } on Exception catch (e) {
       logger.e(e);
       logger.e("Could not remove $entryId from Box $boxId");
+    }
+  }
+
+  @protected
+  Future<void> removeFromCacheByDocId(
+      {required String boxId,
+      required String docId,
+      CollectionBox<DataProxy>? box}) async {
+    try {
+      box ??= await getBox<DataProxy>(id: boxId);
+      final keys = await box.getAllKeys();
+      final filteredkeys = keys.where((element) => element.startsWith(docId));
+      final List<Future> futures = [];
+      for (final key in filteredkeys) {
+        futures.add(
+            removeFromCache<DataProxy>(boxId: boxId, entryId: key, box: box));
+      }
+      await Future.wait(futures);
+
+      // TODO: does it make sense to throw this ex here, since we cant really recover
+      // from that anyways, thats why it is catched right away
+      throw Exception(
+          "Entry from box $boxId with id $docId can not be deleted because it was not found!");
+    } on Exception catch (e) {
+      logger.e(e);
+      logger.e("Could not remove $docId from Box $boxId");
     }
   }
 

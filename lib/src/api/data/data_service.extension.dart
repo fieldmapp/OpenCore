@@ -120,9 +120,8 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       for (final element in docList) {
         // TODO: research/test if this is a preferable cache implementation
         // only update Cache-Entries from the remote if they are not update on the local device
-        final sync = await needsSync<DataCacheOperation>(
-            id: element.docId, cacheOpKey: _cacheOpKey);
-        if (!sync) {
+        if (!await needsSync<DataCacheOperation>(
+            id: element.docId, cacheOpKey: _cacheOpKey)) {
           await addToCache<DataProxy>(
               boxId: collectionID,
               entryId: "${element.docId}:${element.revision}",
@@ -182,9 +181,8 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
         await getBox<DataProxy>(id: doc.collectionId);
     // create a new revision
     final newRevision = uuid.v4();
-    // remove old revision
-    await removeFromCache<DataProxy>(
-        boxId: doc.collectionId, entryId: "${doc.docId}:${doc.revision}");
+    // remove docs with the same docId to avoid duplicate docs
+    await removeFromCacheByDocId(boxId: doc.collectionId, docId: doc.docId);
     // add new revision to cache
     doc.revision = newRevision; // set new revision
     doc.content["revision"] = newRevision;
