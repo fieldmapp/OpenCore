@@ -310,6 +310,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       case DataCacheOperationType.update:
         await cacheOperation.delete();
         final doc = DataProxy(
+            lastUpdatedISO: DateTime.now().toIso8601String(),
             databaseId: getSourceIdentifier(),
             collectionId: cacheOperation.parentId,
             docId: cacheOperation.entryId,
@@ -358,6 +359,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       ...data
     };
     return DataProxy(
+        lastUpdatedISO: DateTime.now().toIso8601String(),
         collectionId: collectionId,
         content: docMap,
         revision: revision,

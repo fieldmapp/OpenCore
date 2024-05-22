@@ -21,6 +21,7 @@ class DataProxyAdapter extends TypeAdapter<DataProxy> {
       collectionId: fields[1] as String,
       docId: fields[2] as String,
       revision: fields[3] as String,
+      lastUpdatedISO: fields[5] as String,
       content: (fields[4] as Map).cast<String, dynamic>(),
     );
   }
@@ -28,7 +29,7 @@ class DataProxyAdapter extends TypeAdapter<DataProxy> {
   @override
   void write(BinaryWriter writer, DataProxy obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.databaseId)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class DataProxyAdapter extends TypeAdapter<DataProxy> {
       ..writeByte(3)
       ..write(obj.revision)
       ..writeByte(4)
-      ..write(obj.content);
+      ..write(obj.content)
+      ..writeByte(5)
+      ..write(obj.lastUpdatedISO);
   }
 
   @override

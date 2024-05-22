@@ -16,6 +16,8 @@ class DataProxy extends HiveObject {
   String revision;
   @HiveField(4)
   late Map<String, dynamic> content;
+  @HiveField(5)
+  String lastUpdatedISO;
 
   final logger = Logger();
 
@@ -24,6 +26,7 @@ class DataProxy extends HiveObject {
       required this.collectionId,
       required this.docId,
       required this.revision,
+      required this.lastUpdatedISO,
       required this.content});
 
   factory DataProxy.fromCallback({required DataProxy Function() callBack}) {

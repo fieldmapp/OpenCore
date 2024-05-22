@@ -303,7 +303,8 @@ abstract class RootModule extends AppModule {
           )
           .toList();
       return ShellRoute(
-          builder: (context, state, child) => Scaffold(body: child),
+          builder: (context, state, child) =>
+              Scaffold(resizeToAvoidBottomInset: false, body: child),
           routes: [
             ...rootSubroutes,
             // add sub module routes

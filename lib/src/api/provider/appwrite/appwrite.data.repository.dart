@@ -2,6 +2,7 @@ part of core;
 
 DataProxy fromDoc(Document doc) {
   final res = DataProxy(
+      lastUpdatedISO: doc.$updatedAt,
       databaseId: doc.$databaseId,
       collectionId: doc.$collectionId,
       docId: doc.$id,
@@ -104,6 +105,7 @@ class AppwriteDataRepository extends ApiDataRepository {
           .timeout(timelimit);
 
       return DataProxy(
+          lastUpdatedISO: DateTime.now().toIso8601String(),
           databaseId: databaseId,
           collectionId: collectionId,
           docId: entryId,

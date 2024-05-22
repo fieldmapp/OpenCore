@@ -59,6 +59,27 @@ mixin ModuleLandingPageUtil {
         : router.routerDelegate.currentConfiguration;
     return matchList.uri.toString();
   }
+
+  Widget getBottomNav(List<ScaffoldWithNavBarTabItem> tabs, int currentIndex) {
+    return Builder(builder: (context) {
+      return BottomNavigationBar(
+        enableFeedback: true,
+        elevation: 10,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        unselectedItemColor: Theme.of(context).primaryColor,
+        selectedItemColor: Theme.of(context).primaryColorDark,
+        unselectedLabelStyle: TextStyle(
+          color: Theme.of(context).primaryColor,
+        ),
+        onTap: (index) => onItemTapped(context, index, tabs, currentIndex),
+        items: tabs,
+        currentIndex: currentIndex,
+      );
+    });
+  }
 }
 
 class ScaffoldWithNavBarTabItem extends BottomNavigationBarItem {

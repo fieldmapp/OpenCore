@@ -21,7 +21,6 @@ import 'package:path_provider/path_provider.dart';
 export 'src/exceptions/connection_exception.dart';
 export 'src/exceptions/module_exception.dart';
 export 'src/widgets/expandable_fab.widget.dart';
-export 'src/widgets/info_container.widget.dart';
 export 'src/api/data/data_adapater.dart';
 export 'src/api/data/cache/data_cache_operation.dart';
 export 'src/api/media/cache/file_cache_operation.dart';
