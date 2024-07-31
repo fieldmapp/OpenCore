@@ -225,9 +225,22 @@ abstract class RootModule extends AppModule {
   @override
   final List<ModuleDependency> dependencies;
 
+  final Drawer? rootDrawer;
+  final AppBar? rootAppBar;
+  final FloatingActionButton? rootFABtn;
+  final FloatingActionButtonLocation? rootFABlocation;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
   GoRouter get router;
 
-  RootModule({required this.subModules, required this.dependencies}) : super();
+  RootModule(
+      {required this.subModules,
+      required this.dependencies,
+      this.rootAppBar,
+      this.rootDrawer,
+      this.rootFABtn,
+      this.rootFABlocation})
+      : super();
 
   // TODO: this needs a rework since i cant enforce the implementation of this method in the implementing
   // class of a RootModule
@@ -286,6 +299,7 @@ abstract class RootModule extends AppModule {
   @override
   RouteBase buildRoutes() {
     List<RouteBase> moduleRoutes = [];
+
     final logger = Logger();
     try {
       logger.i("Getting routes for $moduleName");
@@ -303,8 +317,14 @@ abstract class RootModule extends AppModule {
           )
           .toList();
       return ShellRoute(
-          builder: (context, state, child) =>
-              Scaffold(resizeToAvoidBottomInset: false, body: child),
+          builder: (context, state, child) => Scaffold(
+              key: scaffoldKey,
+              appBar: rootAppBar,
+              drawer: rootDrawer,
+              floatingActionButton: rootFABtn,
+              floatingActionButtonLocation: rootFABlocation,
+              resizeToAvoidBottomInset: false,
+              body: child),
           routes: [
             ...rootSubroutes,
             // add sub module routes

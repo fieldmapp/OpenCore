@@ -59,7 +59,7 @@ mixin Authentication implements ApiAuth {
     return res;
   }
 
-  Future logout({Function? onLogout}) async {
+  Future<void> logout({Function? onLogout}) async {
     try {
       await deleteSession(sessionId: "current");
     } catch (e) {
@@ -94,7 +94,7 @@ mixin Authentication implements ApiAuth {
     throw UnimplementedError();
   }
 
-  Future login({required String email, required String password}) async {
+  Future<void> login({required String email, required String password}) async {
     await _userBox.clear();
     logger.i("LOGIN $email");
 
