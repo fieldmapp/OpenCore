@@ -176,7 +176,8 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
     return doc;
   }
 
-  Future<DataProxy?> updateData(DataProxy doc) async {
+  Future<DataProxy?> updateData(DataProxy doc,
+      {bool offlineOnly = false}) async {
     CollectionBox<DataProxy> box =
         await getBox<DataProxy>(id: doc.collectionId);
     // create a new revision
@@ -206,6 +207,7 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
 
     try {
       final res = await updateEntry(
+          offlineOnly: offlineOnly,
           entryId: doc.docId,
           collectionId: doc.collectionId,
           data: Map.from(doc.content)
@@ -339,6 +341,15 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
     for (final entry in currentOps.entries) {
       await syncSingleChange(cacheOperation: entry.value);
     }
+  }
+
+  Future<DataCacheOperation?> getCacheOperationById(
+      {required String entryId}) async {
+    final cacheOpBox =
+        await collection.openBox<DataCacheOperation>(_cacheOpKey);
+    final operation = await cacheOpBox.get(entryId);
+    final keys = await cacheOpBox.getAllKeys();
+    return operation;
   }
 
   /// create a offline doc, in order to support offline doc. creation

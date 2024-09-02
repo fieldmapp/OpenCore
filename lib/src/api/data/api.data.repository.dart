@@ -25,10 +25,12 @@ abstract class ApiData {
       required Map<String, dynamic> data});
 
   @protected
-  Future<DataProxy> updateEntry(
-      {required String entryId,
-      required String collectionId,
-      required Map<String, dynamic> data});
+  Future<DataProxy> updateEntry({
+    required String entryId,
+    required String collectionId,
+    required Map<String, dynamic> data,
+    bool offlineOnly = false,
+  });
 
   @protected
   Future<dynamic> deleteEntry(
