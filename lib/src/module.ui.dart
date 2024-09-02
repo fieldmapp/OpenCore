@@ -66,14 +66,15 @@ mixin ModuleLandingPageUtil {
         enableFeedback: true,
         elevation: 10,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        unselectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).colorScheme.secondary,
         selectedItemColor: Theme.of(context).primaryColorDark,
         unselectedLabelStyle: TextStyle(
           color: Theme.of(context).primaryColor,
         ),
+        landscapeLayout: BottomNavigationBarLandscapeLayout.linear,
         onTap: (index) => onItemTapped(context, index, tabs, currentIndex),
         items: tabs,
         currentIndex: currentIndex,
@@ -84,7 +85,10 @@ mixin ModuleLandingPageUtil {
 
 class ScaffoldWithNavBarTabItem extends BottomNavigationBarItem {
   const ScaffoldWithNavBarTabItem(
-      {required this.initialLocation, required super.icon, super.label});
+      {required this.initialLocation,
+      required super.icon,
+      super.label,
+      super.backgroundColor});
 
   /// The initial location/path
   final String initialLocation;
