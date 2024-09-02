@@ -1,4 +1,3 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:open_core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -95,11 +94,11 @@ class _SignUpState extends State<SignUp> {
                   context.go(widget.onSuccess);
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(" Successfully account created")));
-                } on AppwriteException catch (e) {
+                } on Exception catch (e) {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                       content: Text(
-                    e.message ?? " Unkown Error",
+                    "Unkown Error $e",
                   )));
                 }
               },

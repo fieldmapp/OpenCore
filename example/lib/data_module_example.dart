@@ -5,23 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:open_core/core.dart';
 
 Future<RootModule> setupDataModule() async {
-  final appwrite = AppwriteBase(
-      endpoint: AppConstant().endpoint,
-      projectId: AppConstant().projectId,
-      selfSigned: AppConstant().selfSigned);
+  // final appwrite = AppwriteBase(
+  //     endpoint: AppConstant().endpoint,
+  //     projectId: AppConstant().projectId,
+  //     selfSigned: AppConstant().selfSigned);
 
-  final ApiAuthRepository apiAuthRepository =
-      AppwriteAuthRepository(account: appwrite.account);
-  await apiAuthRepository.init();
-  final ApiDataRepository apiDataRepository = AppwriteDataRepository(
-      database: appwrite.database,
-      collections: AppConstant().collections,
-      databaseId: AppConstant().databaseId);
-  await apiDataRepository.init();
+  // final ApiAuthRepository apiAuthRepository =
+  //     AppwriteAuthRepository(account: appwrite.account);
+  // await apiAuthRepository.init();
+  // final ApiDataRepository apiDataRepository = AppwriteDataRepository(
+  //     database: appwrite.database,
+  //     collections: AppConstant().collections,
+  //     databaseId: AppConstant().databaseId);
+  // await apiDataRepository.init();
 
-  final ApiMediaRepository apiMediaRepository = AppwriteMediaRepository(
-      storage: appwrite.storage, buckets: AppConstant().buckets);
-  await apiMediaRepository.init();
+  // final ApiMediaRepository apiMediaRepository = AppwriteMediaRepository(
+  //     storage: appwrite.storage, buckets: AppConstant().buckets);
+  // await apiMediaRepository.init();
 
   // // scaffold key to be injected
   final scaffoldKey = GlobalKey<ScaffoldMessengerState>();
@@ -35,14 +35,14 @@ Future<RootModule> setupDataModule() async {
     // // GLOBAL scaffold key
     ModuleDependency<GlobalKey<ScaffoldMessengerState>>(toInject: scaffoldKey),
 
-    ModuleDependency<ApiAuthRepository>(toInject: apiAuthRepository),
-    ModuleDependency<ApiDataRepository>(toInject: apiDataRepository),
-    ModuleDependency<ApiMediaRepository>(toInject: apiMediaRepository),
+    ModuleDependency<ApiAuthRepository>(toInject: null),
+    ModuleDependency<ApiDataRepository>(toInject: null),
+    ModuleDependency<ApiMediaRepository>(toInject: null),
     ModuleDependency<ConnectivityService>(toInject: connectionService),
   ], subModules: [
-    DataModule(
-        buckets: AppConstant().buckets.toList(),
-        collections: AppConstant().collections.toList())
+    // DataModule(
+    //     buckets: AppConstant().buckets.toList(),
+    //     collections: AppConstant().collections.toList())
   ]);
 
   return mainMod;

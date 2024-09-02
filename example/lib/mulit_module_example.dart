@@ -8,14 +8,14 @@ import 'package:open_core/core.dart';
 Future<RootModule> setupMultiModuleEx() async {
   // FlutterCryptography.enable();
 
-  final appwrite = AppwriteBase(
-      endpoint: AppConstant().endpoint,
-      projectId: AppConstant().projectId,
-      selfSigned: AppConstant().selfSigned);
+  // final appwrite = AppwriteBase(
+  //     endpoint: AppConstant().endpoint,
+  //     projectId: AppConstant().projectId,
+  //     selfSigned: AppConstant().selfSigned);
 
-  final ApiAuthRepository apiAuthRepository =
-      AppwriteAuthRepository(account: appwrite.account);
-  await apiAuthRepository.init();
+  // final ApiAuthRepository apiAuthRepository =
+  //     AppwriteAuthRepository(account: appwrite.account);
+  // await apiAuthRepository.init();
 
   // final ApiDataRepository apiDataRepository = AppwriteDataRepository(
   //     database: appwrite.database,
@@ -39,7 +39,7 @@ Future<RootModule> setupMultiModuleEx() async {
     // // GLOBAL scaffold key
     ModuleDependency<GlobalKey<ScaffoldMessengerState>>(toInject: scaffoldKey),
     // // services
-    ModuleDependency<ApiAuthRepository>(toInject: apiAuthRepository),
+    ModuleDependency<ApiAuthRepository>(toInject: null),
     // ModuleDependency<ApiDataRepository>(toInject: apiDataRepository),
     // ModuleDependency<ApiMediaRepository>(toInject: apiMediaRepository),
     ModuleDependency<ConnectivityService>(toInject: connectionService),

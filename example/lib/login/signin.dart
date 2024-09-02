@@ -1,4 +1,3 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:open_core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -79,13 +78,13 @@ class _SignInState extends State<SignIn> {
                   context.go(widget.onSuccess);
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Login successfull")));
-                } on AppwriteException catch (e) {
+                } on Exception catch (e) {
                   print("FAILED");
                   print(e);
                   Navigator.of(context).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text(
-                    e.message ?? " Unkown Error",
+                    "Unknown Error",
                   )));
                 }
               },

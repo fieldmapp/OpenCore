@@ -51,7 +51,7 @@ class MainModule extends RootModule {
     final apiAuth = getDependency<ApiAuthRepository>();
     final user = apiAuth.getUser();
     if (user != null) {
-      final sessionOld = DateTime.now().toUtc().isAfter(user.getExpirey());
+      final sessionOld = DateTime.now().toUtc().isAfter(user.getExpiry());
       final hasNetwork =
           await getDependency<ConnectivityService>().hasNetwork();
       if (sessionOld && hasNetwork) {
