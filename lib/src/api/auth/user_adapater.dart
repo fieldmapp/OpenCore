@@ -1,9 +1,8 @@
-// Can be generated automatically
 import 'package:hive/hive.dart';
 
 part 'user_adapater.g.dart';
 
-// run flutter packages pub run build_runner build to generate a new adpater
+/// generate: dart run build_runner watch
 @HiveType(typeId: 1)
 class User {
   @HiveField(0)
@@ -13,12 +12,19 @@ class User {
   @HiveField(2)
   int expires;
 
-  User(this.name, this.email, this.expires);
+  @HiveField(3)
+  String? accessToken;
+  @HiveField(4)
+  String? refreshToken;
 
-  DateTime getExpirey() {
+  User(
+      this.name, this.email, this.expires, this.accessToken, this.refreshToken);
+
+  DateTime getExpiry() {
     return DateTime.fromMillisecondsSinceEpoch(expires);
   }
 
   @override
-  String toString() => "$name valid until ${getExpirey()}"; // Just for print()
+  String toString() =>
+      "$name valid until ${getExpiry()} $accessToken"; // Just for print()
 }
