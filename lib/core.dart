@@ -30,5 +30,6 @@ part 'src/module.ui.dart';
 part 'src/moduel.service.dart';
 part 'src/connectivity.service.dart';
 part 'src/api/auth/api.auth.repository.dart';
+part 'src/api/auth/auth_mixin.dart';
 part 'src/api/data/api.data.repository.dart';
 part 'src/api/media/api.media.repository.dart';

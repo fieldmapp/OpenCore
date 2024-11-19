@@ -1,4 +1,5 @@
-import 'dart:async';
+part of core;
+
 
 /// Mixin which forces the implementation of `onLogout` and `onLogin`
 /// used for Modules which are depending on external authentication

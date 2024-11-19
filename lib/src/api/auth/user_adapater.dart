@@ -21,7 +21,7 @@ class User {
       this.name, this.email, this.expires, this.accessToken, this.refreshToken);
 
   DateTime getExpiry() {
-    return DateTime.fromMillisecondsSinceEpoch(expires);
+    return DateTime.fromMillisecondsSinceEpoch(expires * 1000);
   }
 
   @override

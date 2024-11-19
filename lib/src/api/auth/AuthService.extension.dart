@@ -180,9 +180,23 @@ mixin Authentication implements ApiAuth {
   /// [sessionId] is the ID of the session to refresh (currently unused).
   ///
   /// This method is intended for OAuth sessions and calls updateSession.
-  Future refreshSession(String sessionId) async {
+  Future<User?> refreshSession(String sessionId) async {
     /// oauth only
-    await updateSession(sessionId: "current");
+
+    // await _userBox.clear();
+    logger.i("Refresh session");
+    try {
+      final cacheUser = await updateSession(sessionId: "current");
+      if (cacheUser == null) {
+        return null;
+      }
+      await _userBox.put("current", cacheUser);
+      logger.i("completed refresh");
+      return cacheUser;
+    } on Exception catch (e) {
+      logger.w("Something went wrong on login $e");
+      return null;
+    }
   }
 
   /// Creates a new user account.
@@ -203,4 +217,6 @@ mixin Authentication implements ApiAuth {
   Future<void> clear() async {
     await _userBox.clear();
   }
+
+
 }

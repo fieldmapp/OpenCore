@@ -22,7 +22,7 @@ abstract class ApiAuth {
   ///
   /// [sessionId] is the unique identifier for the session to be updated.
   @protected
-  Future updateSession({required String sessionId});
+  Future<User?> updateSession({required String sessionId});
 
   /// Creates a new user session (logs in a user).
   ///
