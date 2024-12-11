@@ -128,7 +128,6 @@ mixin Authentication implements ApiAuth {
   ///
   /// Returns a Future that resolves to the logged-in User object, or null if login fails.
   Future<User?> login({required String email, required String password}) async {
-    await _userBox.clear();
     logger.i("LOGIN $email");
     try {
       final cacheUser = await createSession(email: email, password: password);
@@ -172,7 +171,12 @@ mixin Authentication implements ApiAuth {
       throw Exception("Cannot do a cached login without a pw!");
     }
 
-    return await login(email: currentUser.email, password: pw);
+    final user = await login(email: currentUser.email, password: pw);
+
+    if (user == null) {
+      return getUser();
+    }
+    return user;
   }
 
   /// Refreshes the current session.
@@ -181,9 +185,6 @@ mixin Authentication implements ApiAuth {
   ///
   /// This method is intended for OAuth sessions and calls updateSession.
   Future<User?> refreshSession(String sessionId) async {
-    /// oauth only
-
-    // await _userBox.clear();
     logger.i("Refresh session");
     try {
       final cacheUser = await updateSession(sessionId: "current");
@@ -194,7 +195,7 @@ mixin Authentication implements ApiAuth {
       logger.i("completed refresh");
       return cacheUser;
     } on Exception catch (e) {
-      logger.w("Something went wrong on login $e");
+      logger.w("Refreshing the session failed! $e");
       return null;
     }
   }
@@ -217,6 +218,4 @@ mixin Authentication implements ApiAuth {
   Future<void> clear() async {
     await _userBox.clear();
   }
-
-
 }
