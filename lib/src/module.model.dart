@@ -227,7 +227,7 @@ abstract class RootModule extends AppModule {
 
   final Drawer? rootDrawer;
   final AppBar? rootAppBar;
-  final FloatingActionButton? rootFABtn;
+  final Builder? rootFABtn;
   final FloatingActionButtonLocation? rootFABlocation;
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 

@@ -12,6 +12,10 @@ abstract class ApiAuth {
   /// configurations or dependencies for the authentication process.
   Future<void> init();
 
+  void addListeners(
+      {required FutureOr<void> Function() onLogin,
+      required FutureOr<void> Function() onLogout});
+
   /// Deletes a user session.
   ///
   /// [sessionId] is the unique identifier for the session to be deleted.
