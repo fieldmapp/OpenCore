@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:open_core/core.dart';
 import 'package:open_core/src/api/Cache.mixin.dart';
 import 'package:flutter/foundation.dart';
@@ -251,6 +252,10 @@ abstract class Data with Cache, DataCacheUtils implements ApiData {
       // failed lookup, bad connection
       await onError();
       logger.e(eTime);
+    } on SocketException catch (eSocket) {
+      // failed lookup, bad connection
+      await onError();
+      logger.e(eSocket);
     } catch (e) {
       logger.e(e);
     }
