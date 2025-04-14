@@ -1,4 +1,4 @@
-part of core;
+part of '../../../core.dart';
 
 /// Abstract class defining the authentication API interface.
 /// This class provides the basic structure for authentication operations
